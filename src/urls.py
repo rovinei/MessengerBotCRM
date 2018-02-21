@@ -19,5 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admins/', admin.site.urls),
     path('webhook/', include('src.apps.messengerbot.urls', namespace='messengerbot')),
-    path('', include('src.apps.web.urls', namespace='web'))
+    path('', include('src.apps.web.urls', namespace='web')),
 ]
