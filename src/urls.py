@@ -18,6 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admins/', admin.site.urls),
-    path('webhook/', include(('src.apps.messengerbot.urls', 'messengerbot'), namespace='messengerbot')),
-    path('/', include(('src.apps.web', 'web'), namespace='web'))
+    path('webhook/', include('src.apps.messengerbot.urls', namespace='messengerbot')),
+    path('/', include('src.apps.web.urls', namespace='web'))
 ]
