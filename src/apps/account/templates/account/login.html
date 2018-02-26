@@ -64,14 +64,16 @@
             </fb:login-button>
         </div>
         <script type="text/javascript">
+
             function statusChangeCallback(response) {
                 console.log(response);
             }
-            function checkLoginState() {
+
+            (function checkLoginState() {
                 FB.getLoginStatus(function(response) {
                     statusChangeCallback(response);
                 });
-            }
+            })();
         </script>
     </body>
 </html>
