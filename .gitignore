@@ -124,3 +124,5 @@ db.*
 .idea/
 
 .DS_Store
+
+public/
