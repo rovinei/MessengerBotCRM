@@ -29,3 +29,5 @@ def tos_page(request):
         }
     })
     return render(request=request, template_name='web/tos.html', context=context)
+
+

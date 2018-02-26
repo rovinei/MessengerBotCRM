@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admins/', admin.site.urls),
-    path('webhook/', include('src.apps.messengerbot.urls', namespace='messengerbot')),
-    path('', include('src.apps.web.urls', namespace='web')),
+	path('admins/', admin.site.urls),
+	path('webhook/', include('src.apps.messengerbot.urls', namespace='messengerbot')),
+	path('', include('src.apps.web.urls', namespace='web')),
+	path('account/', include('src.apps.account.urls', namespace='account')),
 ]
