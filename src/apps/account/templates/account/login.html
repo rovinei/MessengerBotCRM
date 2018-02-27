@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Laundry management | Login page</title>
+        <title>CRM Messenger Bot | Login page</title>
         <script type="text/javascript" src="{% static 'account/js/jquery.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'account/js/main.js' %}"></script>
         <link rel="stylesheet" type="text/css" href="{% static 'account/css/style.css' %}">
@@ -11,6 +11,7 @@
     <body>
 
         <script>
+            isFacebookSDKLoaded = false;
             window.fbAsyncInit = function() {
                 FB.init({
                     appId      : '1656033818010523',
@@ -19,6 +20,7 @@
                     version    : 'v2.6'
                 });
 
+                isFacebookSDKLoaded = true;
                 FB.AppEvents.logPageView();
                 FB.getLoginStatus(function(response) {
                     statusChangeCallback(response);
@@ -60,8 +62,12 @@
 
             <fb:login-button
               scope="public_profile,email"
-              onlogin="checkLoginState();">
+              onlogin="checkLoginState();" onclick="checkLoginState();">
             </fb:login-button>
+
+            <button onclick="showPages();">
+                Show pages
+            </button>
         </div>
         <script type="text/javascript">
 
@@ -69,11 +75,18 @@
                 console.log(response);
             }
 
-            (function checkLoginState() {
+            function checkLoginState() {
+                console.log("Clicked");
                 FB.getLoginStatus(function(response) {
                     statusChangeCallback(response);
                 });
-            })();
+            }
+
+            function showPages() {
+                FB.api('/me/accounts', function (data) {
+                    console.log(data);
+                });
+            }
         </script>
     </body>
 </html>
