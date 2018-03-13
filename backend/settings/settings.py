@@ -15,6 +15,7 @@ from decouple import AutoConfig
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIR = os.path.dirname(BASE_DIR)
 config = AutoConfig(search_path=os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 # Quick-start development settings - unsuitable for production
@@ -27,69 +28,70 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = [
-	'messenger.rovinei.com',
-	'127.0.0.1',
-	'104.236.219.179',
-	'localhost',
-	'fd5b6ec0.ngrok.io'
+    'messenger.rovinei.com',
+    '127.0.0.1',
+    '104.236.219.179',
+    'localhost',
+    'fd5b6ec0.ngrok.io'
 ]
 
 # Application definition
 
 INSTALLED_APPS = [
-	'django.contrib.admin',
-	'django.contrib.auth',
-	'django.contrib.contenttypes',
-	'django.contrib.sessions',
-	'django.contrib.messages',
-	'django.contrib.staticfiles',
-	'rest_framework',
-	'backend.apps.web',
-	'backend.apps.messengerbot',
-	'backend.apps.api'
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'webpack_loader',
+    'rest_framework',
+    'backend.apps.web',
+    'backend.apps.messengerbot',
+    'backend.apps.api'
 ]
 
 MIDDLEWARE = [
-	'django.middleware.security.SecurityMiddleware',
-	'django.contrib.sessions.middleware.SessionMiddleware',
-	'django.middleware.common.CommonMiddleware',
-	'django.middleware.csrf.CsrfViewMiddleware',
-	'django.contrib.auth.middleware.AuthenticationMiddleware',
-	'django.contrib.messages.middleware.MessageMiddleware',
-	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 REST_FRAMEWORK = {
-	'DEFAULT_PERMISSION_CLASSES': (
-		'rest_framework.permissions.IsAuthenticated',
-	),
-	'DEFAULT_AUTHENTICATION_CLASSES': (
-		'rest_framework_simplejwt.authentication.JWTAuthentication',
-		'rest_framework.authentication.SessionAuthentication',
-	),
-	'DEFAULT_FILTER_BACKEND': (
-		'rest_framework.filters.DjangoFilterBackend'
-	)
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_FILTER_BACKEND': (
+        'rest_framework.filters.DjangoFilterBackend'
+    )
 }
 
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
-	{
-		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [
-			os.path.join(BASE_DIR, "templates")
-		],
-		'APP_DIRS': True,
-		'OPTIONS': {
-			'context_processors': [
-				'django.template.context_processors.debug',
-				'django.template.context_processors.request',
-				'django.contrib.auth.context_processors.auth',
-				'django.contrib.messages.context_processors.messages',
-			],
-		},
-	},
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, "templates")
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
@@ -98,43 +100,45 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.mysql',
-		'HOST': config('DATABASE_HOST'),
-		'NAME': config('DATABASE_NAME'),
-		'USER': config('DATABASE_USER'),
-		'PASSWORD': config('DATABASE_PASSWORD'),
-		'PORT': config('DATABASE_PORT')
-	}
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': config('DATABASE_HOST'),
+        'NAME': config('DATABASE_NAME'),
+        'USER': config('DATABASE_USER'),
+        'PASSWORD': config('DATABASE_PASSWORD'),
+        'PORT': config('DATABASE_PORT')
+    }
 }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-	{
-		'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-	},
-	{
-		'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-	},
-	{
-		'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-	},
-	{
-		'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-	},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 # Static files (CSS, JavaScript, Images)
 STATICFILES_DIRS = [
-	os.path.join(os.path.dirname(BASE_DIR), "assets/static"),
+    os.path.join(PROJECT_DIR, "build/static"),
 ]
 
-# Specify where to find static files from each app
-STATICFILES_FINDERS = [
-	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(PROJECT_DIR, 'webpack-stats.json'),
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -153,7 +157,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "assets/static")
+STATIC_ROOT = os.path.join(PROJECT_DIR, "assets/static")
 STATIC_URL = '/static/'
 
 PAGE_ACCESS_TOKEN = config('PAGE_ACCESS_TOKEN')
