@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-import json
 
 
 FLOW_CONVERSATION_TYPE = (
@@ -48,9 +47,9 @@ class MessengerBotProfile(models.Model):
 	def __str__(self):
 		return self.title
 	
-	def toggleActivationBot(self):
+	def toggle_activation_bot(self):
 		if self.is_switched_on:
-		
+			pass
 							
 	
 class Flow(models.Model):
