@@ -1,5 +1,5 @@
 import storage from 'redux-persist/es/storage'
-import { apiMiddleware } from 'redux-api-middleware';
+import apiMiddleware from './middlewares';
 import { applyMiddleware, createStore } from 'redux'
 import { createFilter   } from 'redux-persist-transform-filter';
 import { persistReducer, persistStore } from 'redux-persist'
@@ -11,9 +11,9 @@ export default (history) => {
     'auth', ['access', 'refresh']);
   const reducer = persistReducer(
     {
-      key: 'polls',
+      key: 'msgcrm',
       storage: storage,
-      whitelist: ['auth'],
+      whitelist: ['auth', 'bot'],
       transforms: [persistedFilter]
     },
     rootReducer)

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+import random
+import string
+import os
 
 FLOW_CONVERSATION_TYPE = (
 	('action', 'Action'),
@@ -30,12 +32,17 @@ FIELD_TYPE = (
         ('select', 'Dropdown select')
     )
 
+def upload_promotion_thumbnail(instance, filename):
+	hash_filename = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(48))
+	origin_filename, extension = os.path.splitext(filename)
+	return '{0}/{1}/{2}/{3}'.format('promotion', 'thumbnail', instance.user.pk, hash_filename.__add__(extension))
+
 
 class MessengerBotProfile(models.Model):
 	"""
 	Facebook page bot define by user which connected to Messenger, Slack, Line, Telegram, Web , etc.
 	"""
-	owner = models.ForeignKey(User, on_delete=models.CASCADE)
+	owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bots')
 	title = models.CharField(max_length=250, blank=False, null=False)
 	page_uuid = models.CharField(max_length=255, blank=False, null=False, unique=True, db_index=True, primary_key=True)
 	access_token = models.CharField(max_length=500, blank=True, null=True, default='')
@@ -48,8 +55,7 @@ class MessengerBotProfile(models.Model):
 		return self.title
 	
 	def toggle_activation_bot(self):
-		if self.is_switched_on:
-			pass
+		self.is_switched_on = not self.is_switched_on
 							
 	
 class Flow(models.Model):
@@ -73,7 +79,7 @@ class FlowConversation(models.Model):
 	type = models.CharField(max_length=255, blank=False, null=False, choices=FLOW_CONVERSATION_TYPE)
 	interaction_type = models.SmallIntegerField(blank=False, null=False, choices=FLOW_INTERACTION_TYPE)
 	flow = models.ForeignKey(Flow, related_name='flow', on_delete=models.CASCADE)
-	data = models.TextField(default='{}')
+	content = models.TextField(default='{}')
 
 
 class Promotion(models.Model):
@@ -83,6 +89,10 @@ class Promotion(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=500, blank=False, null=False)
     display_name = models.CharField(max_length=500, blank=False, null=False)
+    thumbnail = models.ImageField(upload_to=upload_promotion_thumbnail)
+    heading = models.CharField(max_length=250, blank=True, null=True, default='')
+    caption = models.TextField(max_length=999, default='')
+    content = models.TextField(default='{}')
     is_enabled = models.BooleanField(default=True)
     is_valid = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)

@@ -17,10 +17,12 @@ from django.contrib import admin, auth
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+
 urlpatterns = [
 	path('', include('backend.apps.web.urls', namespace='web')),
 	path('dashboard/', TemplateView.as_view(template_name="dashboard/dashboard.html")),
 	path('admins/', admin.site.urls),
 	path('webhook/', include('backend.apps.messengerbot.urls', namespace='messengerbot')),
 	path('api/', include('backend.apps.api.urls', namespace='api')),
+	path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

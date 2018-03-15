@@ -12,9 +12,9 @@ app_name = "api"
 
 urlpatterns = [
 	url(r'^$', get_schema_view()),
-	url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 	url(r'^auth/token/obtain/$', TokenObtainPairView.as_view()),
 	url(r'^auth/token/refresh/$', TokenRefreshView.as_view()),
+	url(r'^bot/$', views.FacebookPageBotView.as_view()),
 	url(r'^bot/(?P<pk>[0-9]+)/$', views.FacebookPageBotGenericAPIView.as_view()),
 ]
 
