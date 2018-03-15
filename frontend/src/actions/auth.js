@@ -5,6 +5,7 @@ export const LOGIN_FAILURE = '@@auth/LOGIN_FAILURE';
 export const TOKEN_REQUEST = '@@auth/TOKEN_REQUEST';
 export const TOKEN_RECEIVED = '@@auth/TOKEN_RECEIVED';
 export const TOKEN_FAILURE = '@@auth/TOKEN_FAILURE';
+
 export const login = (username, password) => ({
   [RSAA]: {
     endpoint: '/api/auth/token/obtain/',
@@ -27,3 +28,6 @@ export const refreshAccessToken = (token) => ({
     ]
   }
 })
+export const logout = () => {
+
+}

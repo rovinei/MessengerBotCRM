@@ -34,4 +34,3 @@ export function withAuth(headers={}) {
   })
 }
 
-// Messenger bot reducer
