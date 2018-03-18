@@ -1,5 +1,6 @@
 import storage from 'redux-persist/es/storage'
 import apiMiddleware from './middlewares';
+import queryMiddleware from './middlewares/queryMiddleware';
 import { applyMiddleware, createStore } from 'redux'
 import { createFilter   } from 'redux-persist-transform-filter';
 import { persistReducer, persistStore } from 'redux-persist'
@@ -21,6 +22,7 @@ export default (history) => {
     reducer, {},
     applyMiddleware(
       apiMiddleware,
+      queryMiddleware,
       routerMiddleware(history))
   )
   persistStore(store)

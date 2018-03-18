@@ -83,20 +83,20 @@ class FlowConversation(models.Model):
 
 
 class Promotion(models.Model):
-    """
+	"""
     promotions data which business owner create for marketing promotional.
     """
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=500, blank=False, null=False)
-    display_name = models.CharField(max_length=500, blank=False, null=False)
-    thumbnail = models.ImageField(upload_to=upload_promotion_thumbnail)
-    heading = models.CharField(max_length=250, blank=True, null=True, default='')
-    caption = models.TextField(max_length=999, default='')
-    content = models.TextField(default='{}')
-    is_enabled = models.BooleanField(default=True)
-    is_valid = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=False, auto_now=True)
+	owner = models.ForeignKey(User, on_delete=models.CASCADE)
+	title = models.CharField(max_length=500, blank=False, null=False)
+	display_name = models.CharField(max_length=500, blank=False, null=False)
+	thumbnail = models.ImageField(upload_to=upload_promotion_thumbnail)
+	heading = models.CharField(max_length=250, blank=True, null=True, default='')
+	caption = models.TextField(max_length=999, default='')
+	content = models.TextField(default='{}')
+	is_enabled = models.BooleanField(default=True)
+	is_valid = models.BooleanField(default=True)
+	created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now_add=False, auto_now=True)
 
 
 

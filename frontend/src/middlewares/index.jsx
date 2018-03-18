@@ -2,7 +2,7 @@ import { isRSAA, apiMiddleware } from 'redux-api-middleware';
 import { TOKEN_RECEIVED, refreshAccessToken } from '../actions/auth';
 import { refreshToken, isAccessTokenExpired } from '../reducers';
 
-export function createApiMiddleware() {
+export const createApiMiddleware = () => {
     let postponedRSAAs = [];
     return ({ dispatch, getState }) => {
         const rsaaMiddleware = apiMiddleware({dispatch, getState});
@@ -37,5 +37,6 @@ export function createApiMiddleware() {
         }
     }
 }
+
 
 export default createApiMiddleware();

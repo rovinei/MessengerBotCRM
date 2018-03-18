@@ -20,6 +20,7 @@ class MessengerBot extends Component {
 }
 const mapStateToProps = (state) => ({
     ...messengerPageBots(state),
+    is_loading: false,
 });
 
 const mapDispatchToProps = (dispatch) => ({

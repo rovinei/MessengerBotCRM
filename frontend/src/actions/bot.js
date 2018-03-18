@@ -3,6 +3,9 @@ import { withAuth } from '../reducers'
 export const BOT_REQUEST = '@@bot/BOT_REQUEST';
 export const BOT_SUCCESS = '@@bot/BOT_SUCCESS';
 export const BOT_FAILURE = '@@bot/BOT_FAILURE';
+export const BOT_CREATE_REQUEST = '@@bot/BOT_CREATE_REQUEST';
+export const BOT_CREATE_SUCCESS = '@@bot/BOT_CREATE_SUCCESS';
+export const BOT_CREATE_FAILURE = '@@bot/BOT_CREATE_FAILURE';
 
 export const getMessengerPageBots = (filter='') => ({
   [RSAA]: {
@@ -25,3 +28,15 @@ export const getMessengerPageBot = (page_uuid) => ({
         ]
     }
 });
+
+export const createMessengerPageBot = (data) => ({
+    [RSAA]: {
+        endpoint: `/api/bot/`,
+        method: 'POST',
+        headers: withAuth({ 'Content-Type': 'application/json' }),
+        body: data,
+        types: [
+            BOT_CREATE_REQUEST, BOT_CREATE_SUCCESS, BOT_CREATE_FAILURE
+        ]
+    }
+})

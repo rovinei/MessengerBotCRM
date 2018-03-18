@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
-import {Grid, Row} from 'react-bootstrap';
+import {Grid, Row, Col} from 'react-bootstrap';
 import {SyncLoader} from 'react-spinners';
 import BotCard from '../components/MessengerBot/BotCard';
-
+import BotCreationForm from '../components/MessengerBot/BotCreationForm';
+import Card from '../components/Card/Card';
+import UIkit from 'uikit';
 class BotListView extends Component {
     
     componentDidMount() {
-        this.props.fetchMessengerBots();
+        // this.props.fetchMessengerBots();
     }
+
+    onShowCreationForm = (event) => {
+        UIkit.modal("#bot-creation-form").show();
+    }
+
     render() {
         return (
             <Grid fluid>
@@ -20,6 +27,17 @@ class BotListView extends Component {
                     />
                 </div>
                 <Row>
+                    <Col md={3}>
+                        <Card
+                            content={
+                                <div className="uk-flex uk-flex-middle uk-flex-center">
+                                    <button onClick={(e)=>this.onShowCreationForm(e)} className="uk-button" id="addBotBtn">
+                                        Add bot
+                                    </button>
+                                </div>
+                            }
+                        />
+                    </Col>
                     {
                         this.props.bots && this.props.bots.length > 0 &&
                         this.props.bots.map((bot, index) => {
@@ -32,6 +50,7 @@ class BotListView extends Component {
                         })
                     }
                 </Row>
+                <BotCreationForm/>
             </Grid>
         );
     }

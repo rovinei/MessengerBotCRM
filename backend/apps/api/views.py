@@ -11,9 +11,11 @@ class FacebookPageBotView(views.APIView):
 	"""
 	def post(self, request, *args, **kwargs):
 		serializer = serializers.FacebookPageBotSerializer(data=request.data)
-		serializer.is_valid(raise_exception=True)
-		serializer.save()
-		response = Response(serializer.data, status=status.HTTP_201_CREATED)
+		if serializer.is_valid(raise_exception=False):
+			serializer.save()
+			response = Response(serializer.data, status=status.HTTP_201_CREATED)
+		else:
+			response = Response({}, status=status.HTTP_417_EXPECTATION_FAILED)
 		return response
 	
 	def get(self, request, *args, **kwargs):

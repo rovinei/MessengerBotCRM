@@ -159,6 +159,8 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(PROJECT_DIR, "assets/static")
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'uploads')
+MEDIA_URL = '/upload/'
 
 PAGE_ACCESS_TOKEN = config('PAGE_ACCESS_TOKEN')
 MESSENGER_BOT_HUB_TOKEN = config('MESSENGER_BOT_HUB_TOKEN')
