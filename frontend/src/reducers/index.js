@@ -27,6 +27,9 @@ export const isRefreshTokenExpired =
 export const authErrors =
   state => fromAuth.errors(state.auth)
 
+export const authIsLoading =
+  state => fromAuth.isLoading(state.auth)
+
 export function withAuth(headers={}) {
   return (state) => ({
     ...headers,

@@ -56,6 +56,9 @@ class MessengerBotProfile(models.Model):
 	
 	def toggle_activation_bot(self):
 		self.is_switched_on = not self.is_switched_on
+		
+	def is_valid_access_token(self):
+		pass
 							
 	
 class Flow(models.Model):

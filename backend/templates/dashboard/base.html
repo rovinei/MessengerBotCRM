@@ -6,11 +6,30 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
-    <link href='//fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Roboto:400,700,300|Montserrat:400,700,800,900|Poppins:200,400' rel='stylesheet' type='text/css'>
 </head>
 <body>
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+            appId: '1656033818010523',
+            autoLogAppEvents: true,
+            xfbml: true,
+            version: 'v2.12'
+            });
+            // Broadcast an event when FB object is ready
+            var fbInitEvent = new Event('FBObjectReady');
+            document.dispatchEvent(fbInitEvent);
+        };
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
     <div id="root">
-
     </div>
     {% render_bundle 'main' %}
 </body>

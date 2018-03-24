@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import BotListView from '../../containers/BotListView';
-import {getMessengerPageBots} from '../../actions/bot';
+import {getMessengerPageBots, createMessengerPageBot} from '../../actions/bot';
 import {messengerPageBots} from '../../reducers/bot';
 
 class MessengerBot extends Component {
@@ -26,6 +26,9 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     fetchMessengerBots: (filter) => {
         dispatch(getMessengerPageBots(filter))
+    },
+    createMessengerBot: (data) => {
+        dispatch(createMessengerPageBot(data))
     }
 })
   

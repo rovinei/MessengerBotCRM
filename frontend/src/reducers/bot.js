@@ -1,6 +1,6 @@
 import * as bot from "../actions/bot";
 const initialState = {
-  bots: [],
+	bots: [],
 	is_loading: true,
 	errors: {}
 };
@@ -9,9 +9,9 @@ export default (state = initialState, action) => {
 		case bot.BOT_REQUEST:
 			console.log("Bots Request");
 			return {
-        ...state,
-        is_loading: true
-      };
+				...state,
+				is_loading: true
+			};
 		case bot.BOT_SUCCESS:
 			console.log("Bots success", action.payload);
 			return {
@@ -28,17 +28,23 @@ export default (state = initialState, action) => {
 					message: "error fetching bots."
 				}
 			};
+		case bot.BOT_CREATE_REQUEST:
+			console.log(bot.BOT_CREATE_REQUEST)
+			return {
+				is_loading: true,
+				
+			}
 		default:
 			console.log("Bots Default", state);
 			return {
-        ...state,
-        is_loading: true
-      };
+				...state,
+				is_loading: true
+			};
 	}
 };
 
-export const messengerPageBots = (state) => {
-  return {
-    ...state.bot
-  }
+export const messengerPageBots = state => {
+	return {
+		...state.bot
+	};
 };

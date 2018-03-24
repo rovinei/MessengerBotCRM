@@ -123,6 +123,7 @@
     "extends": "react-app"
   },
   "devDependencies": {
+    "react-hot-loader": "^4.0.0",
     "webpack-bundle-tracker": "^0.3.0"
   }
 }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import LoginForm from '../../components/LoginForm';
 import {login} from  '../../actions/auth';
-import {authErrors, isAuthenticated} from '../../reducers';
+import {authErrors, isAuthenticated, authIsLoading} from '../../reducers';
 
 const Login = (props) => {
   if(props.isAuthenticated) {
@@ -20,6 +20,7 @@ const Login = (props) => {
 }
 const mapStateToProps = (state) => ({
   errors: authErrors(state),
+  loading: authIsLoading(state),
   isAuthenticated: isAuthenticated(state)
 })
 const mapDispatchToProps = (dispatch) => ({

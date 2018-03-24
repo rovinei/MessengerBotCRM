@@ -1,18 +1,38 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import {Grid, Row, Col} from 'react-bootstrap';
 import {SyncLoader} from 'react-spinners';
 import BotCard from '../components/MessengerBot/BotCard';
 import BotCreationForm from '../components/MessengerBot/BotCreationForm';
+import ISO3166CountryCode from '../iso3166_countries_code.json';
 import Card from '../components/Card/Card';
 import UIkit from 'uikit';
+const modalRoot = document.getElementById('modal-root');
 class BotListView extends Component {
-    
+    constructor(props){
+        super(props);
+        this.state = {
+            is_showing_form: false
+        }
+        this.dom = {}
+    }
     componentDidMount() {
         // this.props.fetchMessengerBots();
     }
 
-    onShowCreationForm = (event) => {
-        UIkit.modal("#bot-creation-form").show();
+    componentWillUnmount() {
+    }
+
+    onShowCreationForm = () => {
+        this.setState({
+            is_showing_form: true
+        });
+    }
+    
+    onCloseCreationForm = () => {
+        this.setState({
+            is_showing_form: false
+        });
     }
 
     render() {
@@ -31,7 +51,7 @@ class BotListView extends Component {
                         <Card
                             content={
                                 <div className="uk-flex uk-flex-middle uk-flex-center">
-                                    <button onClick={(e)=>this.onShowCreationForm(e)} className="uk-button" id="addBotBtn">
+                                    <button onClick={this.onShowCreationForm} className="uk-button" id="addBotBtn">
                                         Add bot
                                     </button>
                                 </div>
@@ -50,7 +70,15 @@ class BotListView extends Component {
                         })
                     }
                 </Row>
-                <BotCreationForm/>
+                {
+                    this.state.is_showing_form && 
+                    <BotCreationForm 
+                        onCloseCreationForm={this.onCloseCreationForm} 
+                        onSubmitForm={this.props.createMessengerBot} 
+                        formRef={el => this.dom.formRef = el} 
+                    />
+                }
+
             </Grid>
         );
     }
