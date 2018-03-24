@@ -347,6 +347,7 @@ class BotCreationForm extends Component {
         var target = event.target;
         var value = target.value;
         var name = target.name;
+        
     }
     onSubmitForm = (event) => {
         event.preventDefault();
