@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "react-modal": "^3.3.2",
-    "selectize": "^0.12.4"
-  }
-}

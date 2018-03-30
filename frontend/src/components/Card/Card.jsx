@@ -4,9 +4,9 @@ import React, { Component } from 'react';
 export class Card extends Component{
     render(){
         return (
-            <div className={"card"+(this.props.plain ? " card-plain":"")}>
+            <div className={"card"+(this.props.plain ? " card-plain":"")+(this.props.extraClass ? " " + this.props.extraClass : "")}>
                 {
-                    this.props.title && 
+                    this.props.title &&
                     <div className={"header"
                         + (this.props.hCenter ? " text-center":"")}>
                         <h4 className="title">{this.props.title}</h4>
@@ -22,7 +22,7 @@ export class Card extends Component{
                     {this.props.content}
 
                     {
-                        this.props.legend && 
+                        this.props.legend &&
                         <div className="footer">
                             {this.props.legend}
                             {this.props.stats != null ? <hr />:""}
@@ -31,7 +31,7 @@ export class Card extends Component{
                             </div>
                         </div>
                     }
-                    
+
                 </div>
             </div>
         );

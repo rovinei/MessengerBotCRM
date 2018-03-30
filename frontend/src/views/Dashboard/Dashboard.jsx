@@ -41,38 +41,38 @@ class Dashboard extends Component {
                     <Row>
                         <Col lg={3} sm={6}>
                             <StatsCard
-                                bigIcon={<i className="pe-7s-server text-warning"></i>}
-                                statsText="Capacity"
-                                statsValue="105GB"
+                                bigIcon={<i className="pe-7s-rocket text-warning"></i>}
+                                statsText="Campaigns"
+                                statsValue="25"
                                 statsIcon={<i className="fa fa-refresh"></i>}
                                 statsIconText="Updated now"
                             />
                         </Col>
                         <Col lg={3} sm={6}>
                             <StatsCard
-                                bigIcon={<i className="pe-7s-wallet text-success"></i>}
-                                statsText="Revenue"
-                                statsValue="$1,345"
+                                bigIcon={<i className="pe-7s-mail-open text-success"></i>}
+                                statsText="Deliveried Succeed"
+                                statsValue="+1,345"
                                 statsIcon={<i className="fa fa-calendar-o"></i>}
-                                statsIconText="Last day"
+                                statsIconText="By today"
                             />
                         </Col>
                         <Col lg={3} sm={6}>
                             <StatsCard
                                 bigIcon={<i className="pe-7s-graph1 text-danger"></i>}
-                                statsText="Errors"
+                                statsText="Deliveried Failed"
                                 statsValue="23"
                                 statsIcon={<i className="fa fa-clock-o"></i>}
-                                statsIconText="In the last hour"
+                                statsIconText="Until now"
                             />
                         </Col>
                         <Col lg={3} sm={6}>
                             <StatsCard
-                                bigIcon={<i className="fa fa-twitter text-info"></i>}
-                                statsText="Followers"
-                                statsValue="+45"
+                                bigIcon={<i className="pe-7s-users text-info"></i>}
+                                statsText="Customers"
+                                statsValue="2435"
                                 statsIcon={<i className="fa fa-refresh"></i>}
-                                statsIconText="Updated now"
+                                statsIconText="Until now"
                             />
                         </Col>
                     </Row>
@@ -104,7 +104,7 @@ class Dashboard extends Component {
                         <Col md={4}>
                             <Card
                                 statsIcon="fa fa-clock-o"
-                                title="Email Statistics"
+                                title="Message Statistics"
                                 category="Last Campaign Performance"
                                 stats="Campaign sent 2 days ago"
                                 content={

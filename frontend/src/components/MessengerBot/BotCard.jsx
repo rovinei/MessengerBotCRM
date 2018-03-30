@@ -4,8 +4,9 @@ import {Col} from 'react-bootstrap';
 
 const BotCard = (props) => {
     return (
-        <Col md={3}>
+        <div className="col-md-3 uk-flex">
             <Card
+
                 title={props.title}
                 content={
                     <div>
@@ -14,8 +15,8 @@ const BotCard = (props) => {
                     </div>
                 }
             />
-        </Col>
-    ); 
+        </div>
+    );
 }
 
 export default BotCard;

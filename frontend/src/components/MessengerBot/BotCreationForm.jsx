@@ -70,10 +70,10 @@ class BotCreationForm extends Component {
                 }
             },
             fb: {},
-            loading: true
+            loading: false
         }
     }
-    
+
     componentDidMount() {
         this.initializeFacebookLogin();
         // this.setUpCountrySelectize();
@@ -111,16 +111,19 @@ class BotCreationForm extends Component {
                 return {
                     form_data: {
                         ...form_data,
-                        target_audience: Object.assign({}, form_data.target_audience, {
-                            audience_type: 'custom',
-                            countries: {
-                                whitelist: []
-                            }
-                        }),
+                        messenger: {
+                            ...form_data.messenger,
+                            target_audience: Object.assign({}, form_data.messenger.target_audience, {
+                                audience_type: 'custom',
+                                countries: {
+                                    whitelist: []
+                                }
+                            }),
+                        }
                     }
                 }
             } else {
-                var obj = Object.assign({}, form_data.target_audience, {
+                var obj = Object.assign({}, form_data.messenger.target_audience, {
                     audience_type: event.target.value
                 });
                 if(obj.hasOwnProperty('countries')){
@@ -129,7 +132,11 @@ class BotCreationForm extends Component {
                 return {
                     form_data: {
                         ...form_data,
-                        target_audience: obj
+                        messenger: {
+                            ...form_data.messenger,
+                            target_audience: obj
+                        }
+
                     }
                 }
             }
@@ -146,18 +153,21 @@ class BotCreationForm extends Component {
                 this.setState(({form_data}) => ({
                     form_data: {
                         ...form_data,
-                        messenger: form_data.messenger.persistent_menu.map((localeMenu, localeMenuIndex) => {
-                            if(localeMenuIndex === 0) {
-                                var filterMenu = localeMenu.call_to_actions.filter((item, i) => {
-                                    return i !== parseInt(parentOrder, 10)
-                                });
-                                return {
-                                    ...localeMenu,
-                                    call_to_actions: filterMenu
+                        messenger: {
+                            ...form_data.messenger,
+                            persistent_menu: form_data.messenger.persistent_menu.map((localeMenu, localeMenuIndex) => {
+                                if(localeMenuIndex === 0) {
+                                    var filterMenu = localeMenu.call_to_actions.filter((item, i) => {
+                                        return i !== parseInt(parentOrder, 10)
+                                    });
+                                    return {
+                                        ...localeMenu,
+                                        call_to_actions: filterMenu
+                                    }
                                 }
-                            }
-                            return localeMenu;
-                        })
+                                return localeMenu;
+                            })
+                        }
                     }
                 }))
                 break;
@@ -166,31 +176,34 @@ class BotCreationForm extends Component {
                 this.setState(({form_data}) => ({
                     form_data: {
                         ...form_data,
-                        messenger: form_data.messenger.persistent_menu.map((localeMenu, localeMenuIndex) => {
-                            if(localeMenuIndex === 0) {
-                                return {
-                                    ...localeMenu,
-                                    call_to_actions: localeMenu.call_to_actions.map((parentMenuItem, parentIndex) => {
-                                        if(parentIndex === parseInt(hierarchyOrder[0], 10)) {
-                                            var filterMenu = parentMenuItem.call_to_actions.filter((item, i) => {
-                                                return i !== parseInt(hierarchyOrder[1], 10)
-                                            });
-                                            if(filterMenu.length === 0){
-                                                var menu_obj = Object.assign({}, parentMenuItem, {type: "postback", payload: ""})
-                                                delete menu_obj.call_to_actions;
-                                                return menu_obj
+                        messenger: {
+                            ...form_data.messenger,
+                            persistent_menu: form_data.messenger.persistent_menu.map((localeMenu, localeMenuIndex) => {
+                                if(localeMenuIndex === 0) {
+                                    return {
+                                        ...localeMenu,
+                                        call_to_actions: localeMenu.call_to_actions.map((parentMenuItem, parentIndex) => {
+                                            if(parentIndex === parseInt(hierarchyOrder[0], 10)) {
+                                                var filterMenu = parentMenuItem.call_to_actions.filter((item, i) => {
+                                                    return i !== parseInt(hierarchyOrder[1], 10)
+                                                });
+                                                if(filterMenu.length === 0){
+                                                    var menu_obj = Object.assign({}, parentMenuItem, {type: "postback", payload: ""})
+                                                    delete menu_obj.call_to_actions;
+                                                    return menu_obj
+                                                }
+                                                return {
+                                                    ...parentMenuItem,
+                                                    call_to_actions: filterMenu
+                                                }
                                             }
-                                            return {
-                                                ...parentMenuItem,
-                                                call_to_actions: filterMenu
-                                            }
-                                        }
-                                        return parentMenuItem;
-                                    })
+                                            return parentMenuItem;
+                                        })
+                                    }
                                 }
-                            }
-                            return localeMenu;
-                        })
+                                return localeMenu;
+                            })
+                        }
                     }
                 }))
                 break;
@@ -199,39 +212,42 @@ class BotCreationForm extends Component {
                 this.setState(({form_data}) => ({
                     form_data: {
                         ...form_data,
-                        messenger: form_data.messenger.persistent_menu.map((localeMenu, localeMenuIndex) => {
-                            if(localeMenuIndex === 0) {
-                                return {
-                                    ...localeMenu,
-                                    call_to_actions: localeMenu.call_to_actions.map((parentMenuItem, parentIndex) => {
-                                        if(parentIndex === parseInt(hierarchyOrder[0], 10)) {
-                                            return {
-                                                ...parentMenuItem,
-                                                call_to_actions: parentMenuItem.call_to_actions.map((secondDepthMenu, secondDeptIndex) => {
-                                                    if(secondDeptIndex === parseInt(hierarchyOrder[1], 10)) {
-                                                        var filterMenu = secondDepthMenu.call_to_actions.filter((item, i) => {
-                                                            return i !== parseInt(hierarchyOrder[2], 10)
-                                                        });
-                                                        if(filterMenu.length === 0){
-                                                            var menu_obj = Object.assign({}, secondDepthMenu, {type: "postback", payload: ""})
-                                                            delete menu_obj.call_to_actions;
-                                                            return menu_obj
+                        messenger: {
+                            ...form_data.messenger,
+                            persistent_menu: form_data.messenger.persistent_menu.map((localeMenu, localeMenuIndex) => {
+                                if(localeMenuIndex === 0) {
+                                    return {
+                                        ...localeMenu,
+                                        call_to_actions: localeMenu.call_to_actions.map((parentMenuItem, parentIndex) => {
+                                            if(parentIndex === parseInt(hierarchyOrder[0], 10)) {
+                                                return {
+                                                    ...parentMenuItem,
+                                                    call_to_actions: parentMenuItem.call_to_actions.map((secondDepthMenu, secondDeptIndex) => {
+                                                        if(secondDeptIndex === parseInt(hierarchyOrder[1], 10)) {
+                                                            var filterMenu = secondDepthMenu.call_to_actions.filter((item, i) => {
+                                                                return i !== parseInt(hierarchyOrder[2], 10)
+                                                            });
+                                                            if(filterMenu.length === 0){
+                                                                var menu_obj = Object.assign({}, secondDepthMenu, {type: "postback", payload: ""})
+                                                                delete menu_obj.call_to_actions;
+                                                                return menu_obj
+                                                            }
+                                                            return {
+                                                                ...secondDepthMenu,
+                                                                call_to_actions: filterMenu
+                                                            }
                                                         }
-                                                        return {
-                                                            ...secondDepthMenu,
-                                                            call_to_actions: filterMenu
-                                                        }
-                                                    }
-                                                    return secondDepthMenu;
-                                                })
+                                                        return secondDepthMenu;
+                                                    })
+                                                }
                                             }
-                                        }
-                                        return parentMenuItem;
-                                    })
+                                            return parentMenuItem;
+                                        })
+                                    }
                                 }
-                            }
-                            return localeMenu;
-                        })
+                                return localeMenu;
+                            })
+                        }
                     }
                 }))
                 break;
@@ -244,23 +260,26 @@ class BotCreationForm extends Component {
         let target = event.currentTarget;
         switch(target.getAttribute("data-btn-action")) {
             case BTN_ACTION_ADD_PARENT_MENU:
-                if (this.state.form_data.persistent_menu[0].call_to_actions.length < TOP_LAYER_LIMIT_MENU) {
+                if (this.state.form_data.messenger.persistent_menu[0].call_to_actions.length < TOP_LAYER_LIMIT_MENU) {
                     let menu_obj = Object.assign({}, menu_struct)
                     this.setState(({form_data}) => ({
                         form_data: {
                             ...form_data,
-                            messenger: form_data.messenger.persistent_menu.map((localeMenu, index) => {
-                                if (index === 0) {
-                                    return {
-                                        ...localeMenu,
-                                        call_to_actions: localeMenu.call_to_actions.concat(menu_obj)
+                            messenger: {
+                                ...form_data.messenger,
+                                persistent_menu: form_data.messenger.persistent_menu.map((localeMenu, index) => {
+                                    if (index === 0) {
+                                        return {
+                                            ...localeMenu,
+                                            call_to_actions: localeMenu.call_to_actions.concat(menu_obj)
+                                        }
                                     }
-                                }
-                                return localeMenu
-                            })
+                                    return localeMenu
+                                })
+                            }
                         }
                     }));
-                    
+
                 }
                 break;
             case BTN_ACTION_ADD_NESTED_MENU:
@@ -271,83 +290,86 @@ class BotCreationForm extends Component {
                     this.setState(({form_data}) => ({
                         form_data: {
                             ...form_data,
-                            messenger: form_data.messenger.persistent_menu.map((localeMenu, index) => {
-                                if(index === 0) {
-                                    return {
-                                        ...localeMenu,
-                                        call_to_actions: localeMenu.call_to_actions.map((parentMenuItem, parentIndex) => {
-                                            
-                                            if (parentDepth===0) {
-                                                if (parentOrder === String(parentIndex)) {
-                                                    if(parentMenuItem.hasOwnProperty('call_to_actions')) {
-                                                        if (parentMenuItem.call_to_actions.length < LOW_LAYER_LIMIT_MENU) {
-                                                            return {
-                                                                ...parentMenuItem,
-                                                                call_to_actions: parentMenuItem.call_to_actions.concat(menu_struct)
+                            messenger: {
+                                ...form_data.messenger,
+                                persistent_menu: form_data.messenger.persistent_menu.map((localeMenu, index) => {
+                                    if(index === 0) {
+                                        return {
+                                            ...localeMenu,
+                                            call_to_actions: localeMenu.call_to_actions.map((parentMenuItem, parentIndex) => {
+
+                                                if (parentDepth===0) {
+                                                    if (parentOrder === String(parentIndex)) {
+                                                        if(parentMenuItem.hasOwnProperty('call_to_actions')) {
+                                                            if (parentMenuItem.call_to_actions.length < LOW_LAYER_LIMIT_MENU) {
+                                                                return {
+                                                                    ...parentMenuItem,
+                                                                    call_to_actions: parentMenuItem.call_to_actions.concat(menu_struct)
+                                                                }
                                                             }
+                                                            return parentMenuItem;
+                                                        } else {
+                                                            let menu_obj = Object.assign({}, parentMenuItem, {
+                                                                type: 'nested',
+                                                                call_to_actions: [menu_struct]
+                                                            });
+                                                            delete menu_obj.payload;
+                                                            return menu_obj;
                                                         }
-                                                        return parentMenuItem;
                                                     } else {
-                                                        let menu_obj = Object.assign({}, parentMenuItem, {
-                                                            type: 'nested',
-                                                            call_to_actions: [menu_struct]
-                                                        });
-                                                        delete menu_obj.payload;
-                                                        return menu_obj;
-                                                    } 
-                                                } else {
+                                                        return parentMenuItem
+                                                    }
+                                                } else if (parentDepth===1) {
+                                                    if(String(parentIndex) === String(parentOrder).split('_')[0]) {
+                                                        return {
+                                                            ...parentMenuItem,
+                                                            call_to_actions: parentMenuItem.call_to_actions.map((secondDepthMenu, secondDeptIndex) => {
+                                                                if (parentOrder === parentIndex+'_'+String(secondDeptIndex)) {
+                                                                    if(secondDepthMenu.hasOwnProperty('call_to_actions')) {
+                                                                        if (secondDepthMenu.call_to_actions.length < LOW_LAYER_LIMIT_MENU) {
+                                                                            return {
+                                                                                ...secondDepthMenu,
+                                                                                call_to_actions: secondDepthMenu.call_to_actions.concat(menu_struct)
+                                                                            }
+                                                                        }
+                                                                        return secondDepthMenu;
+                                                                    } else {
+                                                                        let menu_obj = Object.assign({}, secondDepthMenu, {
+                                                                            type: 'nested',
+                                                                            call_to_actions: [menu_struct]
+                                                                        });
+                                                                        delete menu_obj.payload;
+                                                                        return menu_obj;
+                                                                    }
+                                                                }
+                                                                return secondDepthMenu;
+                                                            })
+                                                        }
+                                                    }
                                                     return parentMenuItem
                                                 }
-                                            } else if (parentDepth===1) {
-                                                if(String(parentIndex) === String(parentOrder).split('_')[0]) {
-                                                    return {
-                                                        ...parentMenuItem,
-                                                        call_to_actions: parentMenuItem.call_to_actions.map((secondDepthMenu, secondDeptIndex) => {
-                                                            if (parentOrder === parentIndex+'_'+String(secondDeptIndex)) {
-                                                                if(secondDepthMenu.hasOwnProperty('call_to_actions')) {
-                                                                    if (secondDepthMenu.call_to_actions.length < LOW_LAYER_LIMIT_MENU) {
-                                                                        return {
-                                                                            ...secondDepthMenu,
-                                                                            call_to_actions: secondDepthMenu.call_to_actions.concat(menu_struct)
-                                                                        }
-                                                                    }
-                                                                    return secondDepthMenu;
-                                                                } else {
-                                                                    let menu_obj = Object.assign({}, secondDepthMenu, {
-                                                                        type: 'nested',
-                                                                        call_to_actions: [menu_struct]
-                                                                    });
-                                                                    delete menu_obj.payload;
-                                                                    return menu_obj;
-                                                                } 
-                                                            }
-                                                            return secondDepthMenu;
-                                                        })
-                                                    }
-                                                }
-                                                return parentMenuItem
-                                            }
-                                            return parentMenuItem;
-                                        })
+                                                return parentMenuItem;
+                                            })
+                                        }
                                     }
-                                }
-                                return localeMenu;
-                            })
+                                    return localeMenu;
+                                })
+                            }
                         }
                     }))
                 }
-                
+
                 break;
             default:
                 break;
         }
-        
+
     }
     onChangeValue = (event) => {
         var target = event.target;
         var value = target.value;
         var name = target.name;
-        
+
     }
     onSubmitForm = (event) => {
         event.preventDefault();
@@ -359,16 +381,16 @@ class BotCreationForm extends Component {
     render() {
         return (
             <Modal
-                ref={(modal) => {this.dom.formModal = modal}} 
-                id="bot-creation-form" 
-                className="uk-flex uk-flex-middle uk-height-1-1 uk-modal" 
+                ref={(modal) => {this.dom.formModal = modal}}
+                id="bot-creation-form"
+                className="uk-flex uk-flex-middle uk-height-1-1 uk-modal"
                 isOpen={true}
                 onRequestClose={this.props.onCloseCreationForm}
                 style={customStyles}
                 contentLabel="Example Modal"
             >
             {
-                this.state.loading && 
+                this.state.loading &&
                 <div className="loading-wrapper active">
                     <SyncLoader
                         color={'#1DC7EA'}
@@ -376,7 +398,7 @@ class BotCreationForm extends Component {
                     />
                 </div>
             }
-                
+
                 <div className="custom-modal-dialog">
                     <button className="uk-modal-close-default" onClick={this.props.onCloseCreationForm} data-uk-icon="icon:close"></button>
                     <div className="uk-modal-header">
@@ -418,20 +440,20 @@ class BotCreationForm extends Component {
                                 <div className="uk-margin">
                                     <div className="uk-grid-small uk-grid-divider uk-child-width-1-3" data-uk-grid>
                                         <div className="uk-form-controls">
-                                            <input id="audience_type_none" name="audience_type" type="radio" className="uk-radio" value="none" checked={this.state.form_data.target_audience.audience_type === 'none'} onChange={this.onChangeAudienceType}/>
+                                            <input id="audience_type_none" name="audience_type" type="radio" className="uk-radio" value="none" checked={this.state.form_data.messenger.target_audience.audience_type === 'none'} onChange={this.onChangeAudienceType}/>
                                             <label htmlFor="audience_type_none" className="uk-form-label">None</label>
                                         </div>
                                         <div className="uk-form-controls">
-                                            <input id="audience_type_all" name="audience_type" type="radio" className="uk-radio" value="all" checked={this.state.form_data.target_audience.audience_type === 'all'} onChange={this.onChangeAudienceType}/>
+                                            <input id="audience_type_all" name="audience_type" type="radio" className="uk-radio" value="all" checked={this.state.form_data.messenger.target_audience.audience_type === 'all'} onChange={this.onChangeAudienceType}/>
                                             <label htmlFor="audience_type_all" className="uk-form-label">All</label>
                                         </div>
                                         <div className="uk-form-controls">
-                                            <input id="audience_type_custom" name="audience_type" type="radio" className="uk-radio" value="custom" checked={this.state.form_data.target_audience.audience_type === 'custom'} onChange={this.onChangeAudienceType}/>
+                                            <input id="audience_type_custom" name="audience_type" type="radio" className="uk-radio" value="custom" checked={this.state.form_data.messenger.target_audience.audience_type === 'custom'} onChange={this.onChangeAudienceType}/>
                                             <label htmlFor="audience_type_custom" className="uk-form-label">Custom</label>
                                         </div>
                                     </div>
-                                    
-                                    <div className={this.state.form_data.target_audience.audience_type === 'custom' ? 'uk-margin' : 'uk-hidden'}>
+
+                                    <div className={this.state.form_data.messenger.target_audience.audience_type === 'custom' ? 'uk-margin' : 'uk-hidden'}>
                                         <input onChange={this.onChangeValue} ref={(input) => {this.targetAudienceCountryInput = input}} id="target_audience_countries" type="text" name="target_audience_countries"/>
                                     </div>
                                     {
@@ -447,7 +469,7 @@ class BotCreationForm extends Component {
                                     </h4>
                                 </div>
                                 {
-                                    this.state.form_data.persistent_menu[0].call_to_actions.length > 0 && 
+                                    this.state.form_data.messenger.persistent_menu[0].call_to_actions.length > 0 &&
                                     <div className="uk-margin">
                                         <div className="uk-form-controls">
                                             <input onChange={this.onChangeValue} id="composer_input_disabled" className="uk-checkbox" type="checkbox" name="composer_input_disabled"/>
@@ -460,47 +482,47 @@ class BotCreationForm extends Component {
                                 }
                                 <div ref={(element)=>{this.persistentMenuWrapperDiv = element}} id="persistentMenuWrapperDiv" className="uk-margin">
                                     {
-                                        this.state.form_data.persistent_menu[0].call_to_actions.map((element, index) => {
+                                        this.state.form_data.messenger.persistent_menu[0].call_to_actions.map((element, index) => {
                                             return (
-                                                <PersistentMenuField  
-                                                    key={`${'persistent_menu_field_'+index}`} 
+                                                <PersistentMenuField
+                                                    key={`${'persistent_menu_field_'+index}`}
                                                     depth={0}
                                                     order={`${index}`}
                                                     orderNumber={index}
-                                                    title={element.title} 
-                                                    payload={element.payload} 
-                                                    removePersistentMenuField={this.removePersistentMenuField} 
+                                                    title={element.title}
+                                                    payload={element.payload}
+                                                    removePersistentMenuField={this.removePersistentMenuField}
                                                     onChangeValue={this.onChangeValue}
                                                     addPersistentMenuInputField={element.call_to_actions && element.call_to_actions.length >= LOW_LAYER_LIMIT_MENU ? false :this.addPersistentMenuInputField}
                                                 >
                                                     {
-                                                        element.call_to_actions && 
+                                                        element.call_to_actions &&
                                                         element.call_to_actions.map((childMenuItem, childMenuIndex) => {
                                                             return (
                                                                 <PersistentMenuField
-                                                                    key={`${'persistent_menu_field_'+index+'_'+childMenuIndex}`} 
+                                                                    key={`${'persistent_menu_field_'+index+'_'+childMenuIndex}`}
                                                                     depth={1}
                                                                     order={`${index+'_'+childMenuIndex}`}
                                                                     orderNumber={childMenuIndex}
-                                                                    title={childMenuItem.title} 
-                                                                    removePersistentMenuField={this.removePersistentMenuField} 
+                                                                    title={childMenuItem.title}
+                                                                    removePersistentMenuField={this.removePersistentMenuField}
                                                                     onChangeValue={this.onChangeValue}
                                                                     addPersistentMenuInputField={childMenuItem.call_to_actions && childMenuItem.call_to_actions.length >= LOW_LAYER_LIMIT_MENU ? false :this.addPersistentMenuInputField}
                                                                 >
                                                                     {
-                                                                        childMenuItem.call_to_actions && 
+                                                                        childMenuItem.call_to_actions &&
                                                                         childMenuItem.call_to_actions.map((secondDeptElement, secondDeptIndex) => {
 
                                                                             return (
                                                                                 <PersistentMenuField
-                                                                                    key={`${'persistent_menu_field_'+index+'_'+childMenuIndex+'_'+secondDeptIndex}`} 
+                                                                                    key={`${'persistent_menu_field_'+index+'_'+childMenuIndex+'_'+secondDeptIndex}`}
                                                                                     depth={2}
                                                                                     order={`${index+'_'+childMenuIndex+'_'+secondDeptIndex}`}
                                                                                     orderNumber={secondDeptIndex}
-                                                                                    title={secondDeptElement.title} 
-                                                                                    payload={secondDeptElement.payload} 
+                                                                                    title={secondDeptElement.title}
+                                                                                    payload={secondDeptElement.payload}
                                                                                     totalChildren={childMenuItem.call_to_actions.length}
-                                                                                    removePersistentMenuField={this.removePersistentMenuField} 
+                                                                                    removePersistentMenuField={this.removePersistentMenuField}
                                                                                     onChangeValue={this.onChangeValue}
                                                                                     addPersistentMenuInputField={false}
                                                                                 />
@@ -516,10 +538,10 @@ class BotCreationForm extends Component {
                                         })
                                     }
                                 </div>
-                                <div 
+                                <div
                                     className={
                                         `uk-margin ${
-                                            this.state.form_data.persistent_menu[0].call_to_actions.length >= TOP_LAYER_LIMIT_MENU ? 'uk-hidden': ''
+                                            this.state.form_data.messenger.persistent_menu[0].call_to_actions.length >= TOP_LAYER_LIMIT_MENU ? 'uk-hidden': ''
                                         }`
                                     }>
                                     <Button data-btn-action={BTN_ACTION_ADD_PARENT_MENU} onClick={this.addPersistentMenuInputField} bsStyle="success" bsSize="sm" fill>
@@ -540,7 +562,7 @@ class BotCreationForm extends Component {
                         </button>
                     </div>
                 </div>
-                
+
             </Modal>
         );
     }

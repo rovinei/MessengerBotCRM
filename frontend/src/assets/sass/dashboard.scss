@@ -1,0 +1,178 @@
+.login-page {
+    background: #f2f2f2;
+    width: 100%;
+    margin: 0 auto;
+    .form-container{
+        min-height: 100vh;
+        padding: 20px;
+    }
+    .form-wrapper{
+        max-width: 390px;
+        background: #fff;
+        border-radius: 10px;
+        overflow-y: auto;
+        padding: 50px 55px 30px 55px;
+        box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+        -webkit-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+        -o-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+        -ms-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+
+        input{
+            font-family: 'Nunito', sans-serif;
+            border-radius: 25px;
+            height: 50px;
+            padding: 8px 17px;
+            font-size: 17px;
+            color: #353866;
+        }
+    }
+    .forgot{
+        margin: 10px 0 0;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        color: #888888;
+        a{
+            text-decoration: none;
+            transition: all 0.15s ease-out;
+            color: #333;
+            &:hover{
+               color: darken($color: #1e87f0, $amount: 20);
+            }
+        }
+    }
+    .bottom-text{
+        color: #888888;
+        margin: 0;
+        padding-top: 30px;
+        display: block;
+        font-family: 'Poppins', sans-serif;
+        font-size: 15px;
+       a{
+           text-decoration: none;
+           margin-left: 5px;
+           transition: all 0.15s ease-out;
+           color: #333;
+           &:hover{
+               color: darken($color: #1e87f0, $amount: 20);
+           }
+       }
+
+    }
+    .logo-wrapper{
+        width: 100%;
+        img {
+            width: 120px;
+            margin: 0 auto;
+            display: block;
+        }
+    }
+    .form-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 2em;
+        color: #353866;
+        margin: 15px 0 30px;
+    }
+    .login-button{
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.5;
+        color: #fff;
+        text-transform: uppercase;
+        width: 100%;
+        height: 50px;
+        border-radius: 25px;
+        background: #57b846;
+        padding: 0 25px;
+        transition: all 0.4s;
+        outline: none;
+        border: none;
+
+        &:hover{
+            background: #353866;
+        }
+    }
+}
+.loading-wrapper{
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: -9999;
+    &.active {
+        z-index: 9999;
+    }
+}
+.inline-tooltip{
+    margin: 0 10px;
+}
+
+.bot-persistent-menu {
+    .uk-radio,
+    .uk-checkbox {
+        margin: 0 10px 0 0;
+        vertical-align: top;
+    }
+}
+.persistent-menu-outter {
+    & > .persistent-menu-outter {
+        margin-left: 15px;
+    }
+}
+
+.bot-target-audience{
+    .uk-radio {
+        margin: 0 10px 0 0;
+    }
+}
+
+.custom-modal-dialog {
+    position: relative;
+    margin: 0 auto;
+    box-sizing: border-box;
+    width: 600px;
+    max-width: calc(100% - 0.01px) !important;
+    border: 1px solid #DFDFDE;
+    background: #fff;
+    opacity: 0;
+    transform: translateY(-100px);
+    transition: .3s linear;
+    transition-property: opacity,transform;
+}
+.ReactModal__Body--open {
+    .ReactModalPortal {
+        z-index: 999;
+    }
+}
+.ReactModalPortal{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+.ReactModal__Content--after-open.uk-modal{
+    display: block;
+    opacity: 1;
+}
+.ReactModal__Content--after-open>.custom-modal-dialog{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.top-padding{
+    padding-top: 20px;
+}
+
+.sidebar:after{
+    background-color: #34314c;
+}
+.footer{
+    display: none !important;
+}

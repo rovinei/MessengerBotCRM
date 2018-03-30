@@ -17,7 +17,7 @@ class BotListView extends Component {
         this.dom = {}
     }
     componentDidMount() {
-        // this.props.fetchMessengerBots();
+        this.props.fetchMessengerBots();
     }
 
     componentWillUnmount() {
@@ -28,7 +28,7 @@ class BotListView extends Component {
             is_showing_form: true
         });
     }
-    
+
     onCloseCreationForm = () => {
         this.setState({
             is_showing_form: false
@@ -46,36 +46,37 @@ class BotListView extends Component {
                         loading={this.props.is_loading}
                     />
                 </div>
-                <Row>
-                    <Col md={3}>
+                <div className="uk-flex">
+                    <div className="col-md-3 uk-flex">
                         <Card
+                            extraClass={"uk-flex uk-flex-1 uk-flex-center uk-flex-middle"}
                             content={
                                 <div className="uk-flex uk-flex-middle uk-flex-center">
                                     <button onClick={this.onShowCreationForm} className="uk-button" id="addBotBtn">
-                                        Add bot
+                                       <span className="uk-display-block" data-uk-icon="icon:plus;ratio:2"></span> &nbsp;Add bot
                                     </button>
                                 </div>
                             }
                         />
-                    </Col>
+                    </div>
                     {
                         this.props.bots && this.props.bots.length > 0 &&
                         this.props.bots.map((bot, index) => {
                             return (
-                                <BotCard 
+                                <BotCard
                                     key={`${'messenger-bot_'+index}`}
                                     {...bot}
                                 />
                             )
                         })
                     }
-                </Row>
+                </div>
                 {
-                    this.state.is_showing_form && 
-                    <BotCreationForm 
-                        onCloseCreationForm={this.onCloseCreationForm} 
-                        onSubmitForm={this.props.createMessengerBot} 
-                        formRef={el => this.dom.formRef = el} 
+                    this.state.is_showing_form &&
+                    <BotCreationForm
+                        onCloseCreationForm={this.onCloseCreationForm}
+                        onSubmitForm={this.props.createMessengerBot}
+                        formRef={el => this.dom.formRef = el}
                     />
                 }
 
