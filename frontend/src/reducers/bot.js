@@ -1,7 +1,7 @@
 import * as bot from "../actions/bot";
 const initialState = {
 	bots: [],
-	is_loading: true,
+	loading: true,
 	errors: {}
 };
 export default (state = initialState, action) => {
@@ -10,35 +10,47 @@ export default (state = initialState, action) => {
 			console.log("Bots Request");
 			return {
 				...state,
-				is_loading: true
+				loading: true
 			};
 		case bot.BOT_SUCCESS:
 			console.log("Bots success", action.payload);
 			return {
 				bots: action.payload,
-				is_loading: false,
+				loading: false,
 				errors: {}
 			};
 		case bot.BOT_FAILURE:
 			console.log("Bots Failed");
 			return {
 				bots: [],
-				is_loading: false,
-				errors: {
-					message: "error fetching bots."
-				}
+				loading: false,
+				errors: action.payload.response || {'fetch_bot_errors': action.payload.statusText}
 			};
 		case bot.BOT_CREATE_REQUEST:
 			console.log(bot.BOT_CREATE_REQUEST)
 			return {
-				is_loading: true,
-				
+				...state,
+				loading: true,
+			}
+		case bot.BOT_CREATE_SUCCESS:
+			console.log(bot.BOT_CREATE_SUCCESS)
+			return {
+				...state,
+				bots: state.bots.concat(action.payload),
+				loading: false,
+			}
+		case bot.BOT_CREATE_FAILURE:
+			console.log(bot.BOT_CREATE_FAILURE)
+			return {
+				...state,
+				loading: false,
+				errors: action.payload.response || {'create_bot_errors': action.payload.statusText}
 			}
 		default:
 			console.log("Bots Default", state);
 			return {
 				...state,
-				is_loading: true
+				loading: false
 			};
 	}
 };
@@ -48,3 +60,11 @@ export const messengerPageBots = state => {
 		...state.bot
 	};
 };
+
+export const isLoading = state => {
+	return state.bot.loading
+}
+
+export const errors = state =>{
+	return state.bot.errors
+}

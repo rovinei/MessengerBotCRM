@@ -37,27 +37,21 @@ class BotListView extends Component {
 
     render() {
         return (
-            <Grid fluid>
+            <div className="uk-container uk-container-large">
                 <div className={
-                    this.props.is_loading ? `${'loading-wrapper active'}` : 'loading-wrapper'
+                    this.props.loading ? `${'loading-wrapper active'}` : 'loading-wrapper'
                 }>
                     <SyncLoader
                         color={'#1DC7EA'}
-                        loading={this.props.is_loading}
+                        loading={this.props.loading}
                     />
                 </div>
-                <div className="uk-flex">
-                    <div className="col-md-3 uk-flex">
-                        <Card
-                            extraClass={"uk-flex uk-flex-1 uk-flex-center uk-flex-middle"}
-                            content={
-                                <div className="uk-flex uk-flex-middle uk-flex-center">
-                                    <button onClick={this.onShowCreationForm} className="uk-button" id="addBotBtn">
-                                       <span className="uk-display-block" data-uk-icon="icon:plus;ratio:2"></span> &nbsp;Add bot
-                                    </button>
-                                </div>
-                            }
-                        />
+                <div className="uk-flex uk-grid-small uk-child-width-1-1 uk-child-width-1-3@s uk-child-width-1-4@m uk-child-width-1-5@l uk-grid-match" data-uk-grid>
+                    <div className="uk-flex">
+                        <button onClick={this.onShowCreationForm} className="uk-display-block" id="addBotBtn">
+                            <span className="uk-display-block" data-uk-icon="icon:plus;ratio:2"></span>
+                            <span className="uk-display-block">Add bot</span>
+                        </button>
                     </div>
                     {
                         this.props.bots && this.props.bots.length > 0 &&
@@ -74,13 +68,14 @@ class BotListView extends Component {
                 {
                     this.state.is_showing_form &&
                     <BotCreationForm
+                        errorsMsg={this.props.errors}
                         onCloseCreationForm={this.onCloseCreationForm}
                         onSubmitForm={this.props.createMessengerBot}
                         formRef={el => this.dom.formRef = el}
                     />
                 }
 
-            </Grid>
+            </div>
         );
     }
 }

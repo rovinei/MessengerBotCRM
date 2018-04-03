@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import BotListView from '../../containers/BotListView';
 import {getMessengerPageBots, createMessengerPageBot} from '../../actions/bot';
-import {messengerPageBots} from '../../reducers/bot';
+import {messengerPageBots, isLoading, errors} from '../../reducers/bot';
 
 class MessengerBot extends Component {
     componentDidMount() {
@@ -20,7 +20,8 @@ class MessengerBot extends Component {
 }
 const mapStateToProps = (state) => ({
     ...messengerPageBots(state),
-    is_loading: false,
+    loading: isLoading(state),
+    errors: errors(state)
 });
 
 const mapDispatchToProps = (dispatch) => ({

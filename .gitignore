@@ -12,10 +12,10 @@ tests/coverage_html/
 tests/.coverage
 build/
 tests/report/
-.assets/
-.static/
-.uploads/
-.media/
+/assets
+/static
+/uploads
+/media
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -27,9 +27,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -72,8 +70,7 @@ coverage.xml
 
 # Django stuff:
 *.log
-.static_storage/
-.media/
+/static_storage
 local_settings.py
 
 # Flask stuff:

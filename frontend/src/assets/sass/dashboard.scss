@@ -1,3 +1,5 @@
+$navy_color:#353866;
+
 .login-page {
     background: #f2f2f2;
     width: 100%;
@@ -24,7 +26,7 @@
             height: 50px;
             padding: 8px 17px;
             font-size: 17px;
-            color: #353866;
+            color: $navy_color;
         }
     }
     .forgot{
@@ -71,7 +73,7 @@
         font-family: 'Montserrat', sans-serif;
         font-weight: 700;
         font-size: 2em;
-        color: #353866;
+        color: $navy_color;
         margin: 15px 0 30px;
     }
     .login-button{
@@ -91,12 +93,12 @@
         border: none;
 
         &:hover{
-            background: #353866;
+            background: $navy_color;
         }
     }
 }
 .loading-wrapper{
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100vh;
     top: 0;
@@ -175,4 +177,48 @@
 }
 .footer{
     display: none !important;
+}
+
+.card{
+    width: 100%;
+}
+
+#addBotBtn{
+    width: 100%;
+    background: #79bd9a;
+    color: #fff;
+    padding: 15px;
+    font-size: 1.3em;
+    text-transform: uppercase;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(63,63,68,0.1);
+    transition: all 0.1s ease-in;
+    &:focus{
+        outline: none;
+    }
+    &:hover{
+        box-shadow: none;
+        background: darken(#79bd9a, $amount: 10);
+    }
+    &:active{
+        border: none;
+    }
+}
+
+#bot-creation-form{
+    button.uk-form-icon{
+        &:active,
+        &:focus,
+        &:hover{
+            outline: none;
+            border: none;
+        }
+    }
+    .uk-modal-title{
+        text-transform: uppercase;
+        color: $navy_color;
+        font-size: 1.6rem;
+    }
 }

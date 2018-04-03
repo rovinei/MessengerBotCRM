@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import reactTriggerChange from 'react-trigger-change';
 import Button from '../../elements/CustomButton/CustomButton';
-import {SyncLoader} from 'react-spinners';
+import {Alert} from 'react-bootstrap';
 import UIkit from 'uikit';
 import Icons from 'uikit/dist/js/uikit-icons';
 import PersistentMenuField from './PersistentMenuField';
@@ -34,6 +35,7 @@ class BotCreationForm extends Component {
     constructor(props) {
         super(props);
         this.dom = {};
+        this.errors = [];
         this.state = {
             form_data: {
                 messenger: {
@@ -42,24 +44,26 @@ class BotCreationForm extends Component {
                         composer_input_disabled: false,
                         call_to_actions: []
                     }],
-                    get_started: "",
-                    greeting: "",
+                    get_started: {
+                        payload: ""
+                    },
+                    greeting: [],
                     target_audience: {
                         audience_type: "all"
                     },
-                    whitelisted_domains: [],
-                    payment_settings: {
-                        privacy_url: "",
-                        public_key: "",
-                        testers: []
-                    },
-                    home_url: {
-                        url: "",
-                        webview_share_button: "show",
-                        webview_height_ratio: "tall",
-                        in_test: true
-                    },
-                    account_linking_url: ""
+                    // whitelisted_domains: [],
+                    // payment_settings: {
+                    //     privacy_url: "",
+                    //     public_key: "",
+                    //     testers: []
+                    // },
+                    // home_url: {
+                    //     url: "",
+                    //     webview_share_button: "show",
+                    //     webview_height_ratio: "tall",
+                    //     in_test: true
+                    // },
+                    // account_linking_url: ""
                 },
                 server: {
                     title: "",
@@ -67,17 +71,24 @@ class BotCreationForm extends Component {
                     access_token: "",
                     long_lived_access_token: "",
                     is_switched_on: true
+                },
+                user: {
+                    id: "",
+                    access_token: "",
                 }
             },
-            fb: {},
-            loading: false
+            fb: {
+                status: 'unknown',
+                page: {
+                    status: false,
+                    data: []
+                }
+            }
         }
     }
 
     componentDidMount() {
-        this.initializeFacebookLogin();
-        // this.setUpCountrySelectize();
-        // UIkit.modal(this.dom.formModal).show();
+        this.checkLoginStatus();
     }
     componentDidUpdate(prevProps, prevState) {
         console.log("componentDidUpdate STATE : ",this.state);
@@ -86,11 +97,81 @@ class BotCreationForm extends Component {
     componentWillUnmount() {
         console.log("componentWillUnmount",this.state);
     }
-    initializeFacebookLogin = () => {
-        console.log("initializeFacebookLogin");
+    checkLoginStatus = () => {
+        window.FB.getLoginStatus(response => this.statusChangeCallback(response))
     }
-    setUpCountrySelectize = () => {
-        window.$("#target_audience_countries").selectize({
+    statusChangeCallback = (response) => {
+        console.log("AUTH RESPONSE", response);
+        if (response.status === 'connected') {
+            // Logged into your app and Facebook.
+            this.setState(({fb, form_data}) => ({
+                fb: {
+                    ...fb,
+                    ...response
+
+                },
+                form_data: {
+                    ...form_data,
+                    user: {
+                        access_token: response.authResponse.accessToken,
+                        id: response.authResponse.userID
+                    }
+                }
+            }))
+            this.getPages();
+        } else if (response.status === 'not_authorized') {
+            // The person is logged into Facebook, but not your app.
+            this.fbConnectBtnInner.innerHTML = 'Please connect with this app.';
+        } else {
+            // The person is not logged into Facebook, so we're not sure if
+            // they are logged into this app or not.
+            this.fbConnectBtnInner.innerHTML = 'Please log into Facebook.';
+        }
+    }
+    getPages = () => {
+        var self = this;
+        window.FB.api('/me/accounts', (response) => {
+            self.setState(({fb})=>({
+                fb: {
+                    ...fb,
+                    page: {
+                        data: response.data,
+                        status: true
+                    }
+                }
+            }));
+            self.facebookPageSelectize[0].selectize.clearOptions();
+            self.facebookPageSelectize[0].selectize.addOption(response.data);
+            self.facebookPageSelectize[0].selectize.refreshOptions();
+        });
+    }
+    onFacebookLogin = () => {
+        var permissionScopes = [
+            'email',
+            'public_profile',
+            'user_events',
+            'user_managed_groups',
+            'publish_actions',
+            'manage_pages',
+            'pages_show_list',
+            'read_page_mailboxes',
+            // 'pages_messaging',
+            // 'pages_messaging_phone_number',
+            // 'pages_messaging_subscriptions',
+            'user_friends',
+            // 'read_insights',
+            // 'pages_manage_cta'
+
+        ];
+        window.FB.login(response => {
+                this.statusChangeCallback(response);
+            },
+            { scope: permissionScopes.join(",")}
+        )
+    }
+    setUpSelectize = () => {
+        var self = this;
+        this.targetAudienceCountrySelectize = window.$("#target_audience_countries").selectize({
             plugins: ['remove_button'],
             delimiter: ',',
             persist: false,
@@ -100,11 +181,27 @@ class BotCreationForm extends Component {
             searchField: ['name'],
             options: ISO3166CountryCode,
             placeholder: "Add whitelist countries",
-            create: false
+            create: false,
+            onChange: function(value){
+                reactTriggerChange(self.targetAudienceCountryInput);
+            }
         });
+        this.facebookPageSelectize = window.$("#page_uuid").selectize({
+            valueField: 'id',
+            labelField: 'name',
+            searchField: ['name'],
+            placeholder: "Select page",
+            options: [],
+            create: false,
+            onChange: function(value){
+                reactTriggerChange(self.pageUUIDInput);
+            }
+        });
+
     }
     onChangeAudienceType = (event) => {
         event.persist()
+        var value = window.$("#target_audience_countries").attr('value');
         console.log("RADIO CHANGED");
         this.setState(({form_data}) => {
             if(event.target.value === 'custom'){
@@ -116,7 +213,7 @@ class BotCreationForm extends Component {
                             target_audience: Object.assign({}, form_data.messenger.target_audience, {
                                 audience_type: 'custom',
                                 countries: {
-                                    whitelist: []
+                                    whitelist: value.split(',')
                                 }
                             }),
                         }
@@ -299,7 +396,7 @@ class BotCreationForm extends Component {
                                             call_to_actions: localeMenu.call_to_actions.map((parentMenuItem, parentIndex) => {
 
                                                 if (parentDepth===0) {
-                                                    if (parentOrder === String(parentIndex)) {
+                                                    if (parentIndex === parseInt(parentOrder.split('_')[0], 10)) {
                                                         if(parentMenuItem.hasOwnProperty('call_to_actions')) {
                                                             if (parentMenuItem.call_to_actions.length < LOW_LAYER_LIMIT_MENU) {
                                                                 return {
@@ -320,11 +417,11 @@ class BotCreationForm extends Component {
                                                         return parentMenuItem
                                                     }
                                                 } else if (parentDepth===1) {
-                                                    if(String(parentIndex) === String(parentOrder).split('_')[0]) {
+                                                    if(parentIndex === parseInt(parentOrder.split('_')[0], 10)) {
                                                         return {
                                                             ...parentMenuItem,
                                                             call_to_actions: parentMenuItem.call_to_actions.map((secondDepthMenu, secondDeptIndex) => {
-                                                                if (parentOrder === parentIndex+'_'+String(secondDeptIndex)) {
+                                                                if (secondDeptIndex === parseInt(parentOrder.split('_')[1], 10)) {
                                                                     if(secondDepthMenu.hasOwnProperty('call_to_actions')) {
                                                                         if (secondDepthMenu.call_to_actions.length < LOW_LAYER_LIMIT_MENU) {
                                                                             return {
@@ -369,7 +466,179 @@ class BotCreationForm extends Component {
         var target = event.target;
         var value = target.value;
         var name = target.name;
-
+        var dataInputName = target.getAttribute('data-input-name');
+        let parent = window.$(target).parents('.persistent-menu-outter')[0];
+        let parentOrder = window.$(parent).attr('data-order');
+        let parentDepth = parseInt(window.$(parent).attr('data-depth'), 10);
+        console.log(dataInputName, value, target, name);
+        this.setState(({form_data}) => {
+            switch(dataInputName) {
+                case 'persistent_menu':
+                    return {
+                        form_data: {
+                            ...form_data,
+                            messenger: {
+                                ...form_data.messenger,
+                                persistent_menu: form_data.messenger.persistent_menu.map((localeMenu, index) => {
+                                    if (index===0) {
+                                        if(parentDepth===0) {
+                                            return {
+                                                ...localeMenu,
+                                                call_to_actions: localeMenu.call_to_actions.map((parentMenu, parentIndex) => {
+                                                    if (parentIndex === parseInt(parentOrder.split('_')[0], 10)) {
+                                                        return {
+                                                            ...parentMenu,
+                                                            [name]: value
+                                                        }
+                                                    }
+                                                    return parentMenu
+                                                })
+                                            }
+                                        } else if(parentDepth===1) {
+                                            return {
+                                                ...localeMenu,
+                                                call_to_actions: localeMenu.call_to_actions.map((parentMenu, parentIndex) => {
+                                                    if(parentIndex === parseInt(parentOrder.split('_')[0], 10)) {
+                                                        return {
+                                                            ...parentMenu,
+                                                            call_to_actions: parentMenu.call_to_actions.map((secondDeptMenu, secondDeptIndex) => {
+                                                                if(secondDeptIndex === parseInt(parentOrder.split('_')[1], 10)) {
+                                                                    return {
+                                                                        ...secondDeptMenu,
+                                                                        [name]: value
+                                                                    }
+                                                                }
+                                                                return secondDeptMenu
+                                                            })
+                                                        }
+                                                    }
+                                                    return parentMenu
+                                                })
+                                            }
+                                        } else if(parentDepth===2) {
+                                            return {
+                                                ...localeMenu,
+                                                call_to_actions: localeMenu.call_to_actions.map((parentMenu, parentIndex) => {
+                                                    if(parentIndex === parseInt(parentOrder.split('_')[0], 10)) {
+                                                        return {
+                                                            ...parentMenu,
+                                                            call_to_actions: parentMenu.call_to_actions.map((secondDeptMenu, secondDeptIndex) => {
+                                                                if (secondDeptIndex === parseInt(parentOrder.split('_')[1], 10)) {
+                                                                    return {
+                                                                        ...secondDeptMenu,
+                                                                        call_to_actions: secondDeptMenu.call_to_actions.map((thirdDeptMenu, thirdDeptIndex) => {
+                                                                            if(thirdDeptIndex === parseInt(parentOrder.split('_')[2], 10)) {
+                                                                                return {
+                                                                                    ...thirdDeptMenu,
+                                                                                    [name]: value
+                                                                                }
+                                                                            }
+                                                                            return thirdDeptMenu
+                                                                        })
+                                                                    }
+                                                                }
+                                                                return secondDeptMenu
+                                                            })
+                                                        }
+                                                    }
+                                                    return parentMenu
+                                                })
+                                            }
+                                        }
+                                    }
+                                    return localeMenu
+                                })
+                            }
+                        }
+                    }
+                case 'target_audience_countries':
+                    return {
+                        form_data: {
+                            ...form_data,
+                            messenger: {
+                                ...form_data.messenger,
+                                target_audience: {
+                                    ...form_data.messenger.target_audience,
+                                    countries: {
+                                        whitelist: value.split(',')
+                                    }
+                                }
+                            }
+                        }
+                    }
+                case 'display_name':
+                    return {
+                        form_data: {
+                            ...form_data,
+                            server: {
+                                ...form_data.server,
+                                [name]: value
+                            }
+                        }
+                    }
+                case 'get_started':
+                    return {
+                        form_data: {
+                            ...form_data,
+                            messenger: {
+                                ...form_data.messenger,
+                                [name]: {
+                                    payload: value
+                                }
+                            }
+                        }
+                    }
+                case 'greeting':
+                    return {
+                        form_data: {
+                            ...form_data,
+                            messenger: {
+                                ...form_data.messenger,
+                                [name]: [
+                                    {
+                                        locale: "default",
+                                        text: value
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                case 'composer_input_disabled':
+                    return {
+                        form_data: {
+                            ...form_data,
+                            messenger: {
+                                ...form_data.messenger,
+                                persistent_menu: form_data.messenger.persistent_menu.map((localeMenu, localeIndex) => {
+                                    if(localeIndex === 0){
+                                        return {
+                                            ...localeMenu,
+                                            [name]: target.checked
+                                        }
+                                    }
+                                    return localeMenu
+                                })
+                            }
+                        }
+                    }
+                case 'page_uuid':
+                    return {
+                        form_data: {
+                            ...form_data,
+                            server: {
+                                ...form_data.server,
+                                [name]: value
+                            }
+                        }
+                    }
+                default:
+                    return {
+                        form_data: {
+                            ...form_data
+                        }
+                    }
+            }
+        })
     }
     onSubmitForm = (event) => {
         event.preventDefault();
@@ -378,39 +647,33 @@ class BotCreationForm extends Component {
     onCancelForm = (event) => {
         event.preventDefault();
     }
+    
     render() {
         return (
             <Modal
                 ref={(modal) => {this.dom.formModal = modal}}
-                id="bot-creation-form"
                 className="uk-flex uk-flex-middle uk-height-1-1 uk-modal"
                 isOpen={true}
                 onRequestClose={this.props.onCloseCreationForm}
                 style={customStyles}
                 contentLabel="Example Modal"
             >
-            {
-                this.state.loading &&
-                <div className="loading-wrapper active">
-                    <SyncLoader
-                        color={'#1DC7EA'}
-                        loading={true}
-                    />
-                </div>
-            }
 
-                <div className="custom-modal-dialog">
+                <div className="custom-modal-dialog" id="bot-creation-form">
                     <button className="uk-modal-close-default" onClick={this.props.onCloseCreationForm} data-uk-icon="icon:close"></button>
                     <div className="uk-modal-header">
                         <h2 className="uk-modal-title uk-text-center">Create Messenger Bot</h2>
                     </div>
                     <div className="uk-modal-body" data-uk-overflow-auto>
+                        <div className="errors-wrapper">
+                            
+                        </div>
                         <div className="form-wrapper">
                             <div className="uk-margin">
                                 <div className="uk-form-controls">
                                     <div className="uk-inline uk-flex">
                                         <button className="uk-form-icon" data-uk-tooltip="title:just a bot display name, which is read only on dashboard;delay:400;pos:right;ratio:0.6" data-uk-icon="icon: info"></button>
-                                        <input onChange={this.onChangeValue} placeholder="Display name" className="uk-input" type="text" name="title"/>
+                                        <input onChange={this.onChangeValue} placeholder="Display name" className="uk-input" type="text" name="title" data-input-name="display_name"/>
                                     </div>
                                 </div>
                             </div>
@@ -418,7 +681,7 @@ class BotCreationForm extends Component {
                                 <div className="uk-form-controls">
                                     <div className="uk-inline uk-flex">
                                         <button className="uk-form-icon" data-uk-tooltip="title:a message which will reply back to user after first interact through messenger;delay:400;pos:right;ratio:0.6" data-uk-icon="icon: info"></button>
-                                        <input onChange={this.onChangeValue} placeholder="Welcome message" className="uk-input" type="text" name="get_started"/>
+                                        <input onChange={this.onChangeValue} placeholder="Welcome message" className="uk-input" type="text" name="get_started" data-input-name="get_started"/>
                                     </div>
                                 </div>
                             </div>
@@ -426,7 +689,7 @@ class BotCreationForm extends Component {
                                 <div className="uk-form-controls">
                                     <div className="uk-inline uk-flex">
                                         <button className="uk-form-icon" data-uk-tooltip="title:Greeting message people will see on the welcome screen of your bot;delay:400;pos:right;ratio:0.6" data-uk-icon="icon: info"></button>
-                                        <input onChange={this.onChangeValue} placeholder="Greeting message" className="uk-input" type="text" name="greeting"/>
+                                        <input onChange={this.onChangeValue} placeholder="Greeting message" className="uk-input" type="text" name="greeting" data-input-name="greeting"/>
                                     </div>
                                 </div>
                             </div>
@@ -454,11 +717,9 @@ class BotCreationForm extends Component {
                                     </div>
 
                                     <div className={this.state.form_data.messenger.target_audience.audience_type === 'custom' ? 'uk-margin' : 'uk-hidden'}>
-                                        <input onChange={this.onChangeValue} ref={(input) => {this.targetAudienceCountryInput = input}} id="target_audience_countries" type="text" name="target_audience_countries"/>
+                                        <input onChange={this.onChangeValue} ref={(input) => {this.targetAudienceCountryInput = input}} id="target_audience_countries" type="text" name="target_audience_countries" data-input-name="target_audience_countries" value=""/>
                                     </div>
-                                    {
-                                        this.setUpCountrySelectize()
-                                    }
+                                    
                                 </div>
                             </fieldset>
                             <fieldset className="uk-fieldset bot-persistent-menu">
@@ -472,8 +733,8 @@ class BotCreationForm extends Component {
                                     this.state.form_data.messenger.persistent_menu[0].call_to_actions.length > 0 &&
                                     <div className="uk-margin">
                                         <div className="uk-form-controls">
-                                            <input onChange={this.onChangeValue} id="composer_input_disabled" className="uk-checkbox" type="checkbox" name="composer_input_disabled"/>
-                                            <label htmlFor="composer_input_disabled" className="uk-form-label">
+                                            <input onChange={this.onChangeValue} id="composer_input_disabled" className="uk-checkbox" type="checkbox" name="composer_input_disabled" data-input-name="composer_input_disabled"/>
+                                            <label htmlFor="composer_input_disabled" className="uk-form-label" checked={this.state.form_data.messenger.persistent_menu[0].composer_input_disabled}>
                                                 Disable messenger text input
                                             </label>
                                         </div>
@@ -551,6 +812,28 @@ class BotCreationForm extends Component {
                                     </Button>
                                 </div>
                             </fieldset>
+                            <fieldset className="uk-fieldset connect-facebook-page">
+                                <div className="uk-legend">
+                                    <h4>
+                                        Connect facebook page
+                                        <span className="inline-tooltip" data-uk-tooltip="title:connect facebook page to the bot you're going to create.;delay:400;pos:right" data-uk-icon="icon: info"></span>
+                                    </h4>
+                                </div>
+                                <div className="uk-margin">
+                                    <div className={this.state.fb.page.status ? 'uk-margin' : 'uk-hidden'}>
+                                        <select onChange={this.onChangeValue} ref={(input) => {this.pageUUIDInput = input}} id="page_uuid" name="page_uuid" data-input-name="page_uuid"/>
+                                    </div>
+                                    {
+                                        this.state.fb.status === 'connected' ? '' : 
+                                        <Button onClick={this.onFacebookLogin} bsStyle="success" bsSize="sm" fill>
+                                            <span data-uk-icon="icon:plus-circle;"></span>
+                                            &nbsp;&nbsp;
+                                            <span ref={(btn) => {this.fbConnectBtnInner = btn}}>Connect Facebook</span>
+                                        </Button>
+                                    }
+                                    
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
                     <div className="uk-modal-footer uk-text-right">
@@ -562,7 +845,9 @@ class BotCreationForm extends Component {
                         </button>
                     </div>
                 </div>
-
+                {
+                    this.setUpSelectize()
+                }                    
             </Modal>
         );
     }

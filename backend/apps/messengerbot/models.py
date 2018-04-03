@@ -1,8 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+from .facebook_api import get_page_detail, is_valid_token
 import random
 import string
 import os
+
 
 FLOW_CONVERSATION_TYPE = (
 	('action', 'Action'),
@@ -42,7 +44,7 @@ class MessengerBotProfile(models.Model):
 	"""
 	Facebook page bot define by user which connected to Messenger, Slack, Line, Telegram, Web , etc.
 	"""
-	owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bots')
+	owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bots')
 	title = models.CharField(max_length=250, blank=False, null=False)
 	page_uuid = models.CharField(max_length=255, blank=False, null=False, unique=True, db_index=True, primary_key=True)
 	access_token = models.CharField(max_length=500, blank=True, null=True, default='')
@@ -58,7 +60,13 @@ class MessengerBotProfile(models.Model):
 		self.is_switched_on = not self.is_switched_on
 		
 	def is_valid_access_token(self):
-		pass
+		is_valid = is_valid_token(self.long_lived_access_token)
+		return is_valid
+	
+	def get_page_detail(self):
+		fields = 'id,access_token,name,username,fan_count,overall_star_rating,phone'
+		response = get_page_detail(self.long_lived_access_token, self.page_uuid, fields=fields)
+		return response
 							
 	
 class Flow(models.Model):
@@ -89,7 +97,7 @@ class Promotion(models.Model):
 	"""
     promotions data which business owner create for marketing promotional.
     """
-	owner = models.ForeignKey(User, on_delete=models.CASCADE)
+	owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 	title = models.CharField(max_length=500, blank=False, null=False)
 	display_name = models.CharField(max_length=500, blank=False, null=False)
 	thumbnail = models.ImageField(upload_to=upload_promotion_thumbnail)

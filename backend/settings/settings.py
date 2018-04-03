@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'backend.apps.web',
     'backend.apps.messengerbot',
-    'backend.apps.api'
+    'backend.apps.api',
+	'backend.apps.users'
 ]
 
 MIDDLEWARE = [
@@ -94,6 +95,7 @@ TEMPLATES = [
     },
 ]
 
+AUTH_USER_MODEL = 'users.User'
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database

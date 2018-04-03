@@ -15,7 +15,7 @@ class PersistentMenuField extends Component {
                         <div className="uk-flex-1">
                             <div className="uk-inline uk-flex">
                                 <button className="uk-form-icon" data-uk-tooltip="title:Greeting message people will see on the welcome screen of your bot;delay:400;pos:right;ratio:0.6" data-uk-icon="icon: info"></button>
-                                <input value={this.props.title} placeholder="Menu title" className="uk-input persistent-menu-title" type="text"/>
+                                <input value={this.props.title} placeholder="Menu title" className="uk-input persistent-menu-title" type="text" name="title" data-input-name="persistent_menu" onChange={this.props.onChangeValue}/>
                             </div>
                         </div>
                         {
@@ -23,7 +23,7 @@ class PersistentMenuField extends Component {
                             <div className="uk-flex-1">
                                 <div className="uk-inline uk-flex">
                                     <button className="uk-form-icon" data-uk-tooltip="title:postback payload or external url;delay:400;pos:right;ratio:0.6" data-uk-icon="icon: info"></button>
-                                    <input value={this.props.payload} placeholder="Words, phrase, url" className="uk-input persistent-menu-value" type="text"/>
+                                    <input value={this.props.payload} placeholder="Words, phrase, url" className="uk-input persistent-menu-value" type="text" name="payload" data-input-name="persistent_menu" onChange={this.props.onChangeValue}/>
                                 </div>
                             </div>
                         }

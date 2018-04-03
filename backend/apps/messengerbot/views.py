@@ -1,7 +1,21 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from rest_framework.response import Response
+from rest_framework import views, status, generics
+from backend.apps.users.models import User
+
+from backend.apps.messengerbot.models import MessengerBotProfile
+from backend.apps.messengerbot.facebook_api import (
+	do_messenger_profile,
+	do_webhook_subscription,
+	get_page_detail,
+	exchange_long_lived_token,
+	is_valid_token
+)
 from . import facebook_api
+from . import serializers
 import logging
 import logging.config
 import sys
@@ -137,3 +151,126 @@ def facebook_user_webhook(request):
 		logging.debug("Facebook messenger hook")
 		logging.debug(incoming_message)
 		return HttpResponse(status=200)
+
+
+class FacebookPageBotAPIView(views.APIView):
+	"""
+	Generic API view for facebook page messenger bot profile
+	"""
+	
+	def post(self, *args, **kwargs):
+		context = dict()
+		messenger_data = self.request.data['messenger']
+		server_data = self.request.data['server']
+		fb_user = self.request.data['user']
+		print(server_data['page_uuid'])
+		print(fb_user['access_token'])
+		print(messenger_data)
+		
+		is_valid = is_valid_token(fb_user['access_token'])
+		if not is_valid:
+			print('TOKEN INVALID')
+			context.update({
+				'error': {
+					'code': 417,
+					'message': 'Facebook token has expired, please login to facebook or re-authenticate with our facebook app again.'
+				}
+			})
+			response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+			return response
+		print('TOKEN VALID')
+		long_lived_token = exchange_long_lived_token(fb_user['access_token'])
+		if not long_lived_token:
+			print('FAILED OBTAIN LONG LIVED TOKEN')
+			context.update({
+				'error': {
+					'code': 417,
+					'message': 'Cannot obtain access token from facebook, please try again.'
+				}
+			})
+			response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+			return response
+		print('OBTAINED LONG LIVED TOKEN')
+		page_detail = get_page_detail(access_token=long_lived_token, page_id=server_data['page_uuid'],
+		                              fields='access_token')
+		if not page_detail or 'error' in page_detail:
+			print('FAILED GET PAGE DETAIL')
+			context.update({
+				'error': {
+					'code': (lambda: page_detail['error']['code'], '307')[page_detail == False],
+					'message':
+						(lambda: page_detail['error']['message'], 'Failed to obtain page access token from facebook')[
+							page_detail == False]
+				}
+			})
+			response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+			return response
+		page_token = page_detail['access_token']
+		print('GET PAGE DETAIL TOKEN', page_token)
+		# msg_profile_response = do_messenger_profile(access_token=page_token, action='SET', data=messenger_data)
+		# if 'error' in msg_profile_response:
+		# 	print('FAILED MESSENGER PROFILE')
+		# 	context.update({
+		# 		'error': {
+		# 			'code': msg_profile_response['error']['code'],
+		# 			'message': msg_profile_response['error']['message']
+		# 		}
+		# 	})
+		# 	response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+		# 	return response
+		# print('DONE MESSENGER PROFILE')
+		# webhook_response = do_webhook_subscription(access_token=page_token, page_id=server_data.get('page_uuid'),
+		#                                            action='POST')
+		# if 'error' in webhook_response:
+		# 	print('FAILED WEBHOOK SUBSCRIPTION')
+		# 	context.update({
+		# 		'error': {
+		# 			'code': webhook_response['error']['code'],
+		# 			'message': webhook_response['error']['message']
+		# 		}
+		# 	})
+		# 	response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+		# 	return response
+		# print('DONE WEBHOOK SUBSCRIPTION')
+		server_data['long_lived_access_token'] = page_token
+		server_data['access_token'] = page_token
+		print('NEW SERVER DATA', server_data)
+		serializer = serializers.FacebookPageBotSerializer(data=server_data, context={'request': self.request})
+		if serializer.is_valid():
+			serializer.save()
+			print('SAVED BOT PROFILE')
+			response = Response(serializer.data, status=status.HTTP_201_CREATED)
+		else:
+			print('INVALID BOT PROFILE DATA')
+			context.update({
+				'error_fields': serializer.errors
+			})
+			response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+		return response
+	
+	def get(self, *args, **kwargs):
+		user = User.objects.get(pk=self.request.user.pk)
+		bots = user.bots.all()
+		serializer = serializers.FacebookPageBotSerializer(bots, many=True, context={'request': self.request})
+		response = Response(serializer.data, status=status.HTTP_200_OK)
+		return response
+
+
+class FacebookPageBotGenericAPIView(generics.GenericAPIView):
+	serializer_class = serializers.FacebookPageBotSerializer
+	
+	def get_queryset(self):
+		return MessengerBotProfile.objects.all().filter(owner=self.request.user)
+	
+	def get_object(self):
+		queryset = self.get_queryset()
+		filter_attr = {}
+		for field in self.multiple_lookup_fields:
+			filter_attr[field] = self.kwargs[field]
+		
+		bot = get_object_or_404(queryset, **filter_attr)
+		return bot
+
+
+
+

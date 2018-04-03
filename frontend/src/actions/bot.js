@@ -34,7 +34,7 @@ export const createMessengerPageBot = (data) => ({
         endpoint: `/api/bot/`,
         method: 'POST',
         headers: withAuth({ 'Content-Type': 'application/json' }),
-        body: data,
+        body: JSON.stringify(data),
         types: [
             BOT_CREATE_REQUEST, BOT_CREATE_SUCCESS, BOT_CREATE_FAILURE
         ]

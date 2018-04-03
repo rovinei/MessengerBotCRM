@@ -79,7 +79,7 @@
       background: #353866; }
 
 .loading-wrapper {
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100vh;
   top: 0;
@@ -144,3 +144,35 @@
 
 .footer {
   display: none !important; }
+
+.card {
+  width: 100%; }
+
+#addBotBtn {
+  width: 100%;
+  background: #79bd9a;
+  color: #fff;
+  padding: 15px;
+  font-size: 1.3em;
+  text-transform: uppercase;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(63, 63, 68, 0.1);
+  transition: all 0.1s ease-in; }
+  #addBotBtn:focus {
+    outline: none; }
+  #addBotBtn:hover {
+    box-shadow: none;
+    background: #57ac80; }
+  #addBotBtn:active {
+    border: none; }
+
+#bot-creation-form button.uk-form-icon:active, #bot-creation-form button.uk-form-icon:focus, #bot-creation-form button.uk-form-icon:hover {
+  outline: none;
+  border: none; }
+
+#bot-creation-form .uk-modal-title {
+  text-transform: uppercase;
+  color: #353866;
+  font-size: 1.6rem; }
