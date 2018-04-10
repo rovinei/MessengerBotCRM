@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom';
 import Login from './views/Login/Login.jsx';
 import PrivateRoute from './containers/PrivateRoute.jsx';
-import App from 'containers/App/App.jsx';
+import App from './containers/App/App.jsx';
 import jQuery from 'jquery';
 import 'selectize/dist/js/standalone/selectize.min.js';
 import 'selectize/dist/css/selectize.default.css';
