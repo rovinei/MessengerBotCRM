@@ -126,7 +126,7 @@ db.*
 
 .DS_Store
 
-public/
+/public
 
 # Reactjs
 *~
