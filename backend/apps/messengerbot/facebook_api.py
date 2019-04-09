@@ -1,6 +1,7 @@
 from django.conf import settings
 import requests
 import json
+import urllib
 
 
 def send_message(url, data=None, params=None, headers=None):
@@ -88,7 +89,8 @@ def do_webhook_subscription(access_token=None, page_id=None, action=None):
 	params = dict()
 	headers = dict()
 	params.update({
-		'access_token': access_token
+		'access_token': access_token,
+		'subscribed_fields': 'messages,members',
 	})
 	headers.update({
 		'Content-Type': 'application/json'
@@ -125,6 +127,7 @@ def exchange_long_lived_token(access_token=None):
 	graph_api_url = settings.FACEBOOK_GRAPH_API_ENDPOINT + settings.FACEBOOK_APP_VERSION + '/oauth/access_token'
 	response = requests.get(graph_api_url, params=params, headers=headers)
 	response = response.json()
+	print("LONG LIVED TOKEN: ", response)
 	if 'access_token' in response:
 		long_lived_token = response.get('access_token')
 	else:
@@ -154,7 +157,7 @@ def get_page_detail(access_token=None, page_id=None, fields=None):
 		response = requests.get(url, params=params, headers=headers)
 		response = response.json()
 		pagination = response.get('paging')
-		
+		print("GET PAGE DETAIL: ", response)
 		if 'data' in response:
 			data = response.get('data')
 			for page in data:
@@ -177,16 +180,27 @@ def debug_access_token(input_token=None):
 		raise ValueError("Argument error, input_token must be present.")
 	params = dict()
 	headers = dict()
+	access_token = settings.FACEBOOK_APP_ID + '|' + settings.FACEBOOK_APP_SECRET
 	params.update({
-		'access_token': settings.FACEBOOK_APP_ID + '|' + settings.FACEBOOK_APP_SECRET,
+		'access_token': access_token,
 		'input_token': input_token
 	})
 	headers.update({
-		'Content-Type': 'application/json'
+		'Content-Type': 'application/json; charset=utf8'
 	})
-	print('DEBUGGING TOKEN')
-	graph_api_url = settings.FACEBOOK_GRAPH_API_ENDPOINT + settings.FACEBOOK_APP_VERSION + '/debug_token'
-	response = requests.get(graph_api_url, params=params, headers=headers)
+
+	print('DEBUGGING TOKEN', params)
+	# graph_api_url = settings.FACEBOOK_GRAPH_API_ENDPOINT + settings.FACEBOOK_APP_VERSION + '/debug_token'
+	# query = urllib.urlencode(params).replace('%7C', '|')
+	# ses = requests.Session()
+	# req = requests.Request(method='GET', url=graph_api_url)
+	# prep = req.prepare()
+	# prep.url = graph_api_url + query
+	# r = ses.send(prep)
+
+	graph_api_url = settings.FACEBOOK_GRAPH_API_ENDPOINT + settings.FACEBOOK_APP_VERSION + '/debug_token?'+params
+	response = requests.get(graph_api_url, headers=headers)
+	print(response.url)
 	response = response.json()
 	print("TOKEN DEBBUGED OBJECT", response)
 	return response

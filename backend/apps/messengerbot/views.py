@@ -53,7 +53,7 @@ def facebook_page_webhook(request):
 	elif request.method == 'POST':
 		incoming_message = json.loads(request.body.decode('utf-8'))
 		entries_message = incoming_message['entry']
-		logging.debug("Facebook messenger hook")
+		logging.debug("Facebook messenger page hook")
 		logging.debug(incoming_message)
 		
 		if incoming_message['object'] == 'page':
@@ -65,19 +65,21 @@ def facebook_page_webhook(request):
 					user_page_id = stack_message['sender']['id']
 					recipient_page_uuid = stack_message['recipient']['id']
 					message_sent_time = stack_message['timestamp']
-					
+					print("STACK MESSAGE: ", stack_message)
+					print('message' in stack_message)
 					if 'message' in stack_message:
+						print("SEND USER A MESSAGE")
 						graph_api_url = settings.FACEBOOK_GRAPH_API_ENDPOINT + settings.FACEBOOK_APP_VERSION + '/me/messages'
 						message_event = "page_messaging"
 						message_text = str(stack_message['message']['text']).lower()
 						message_words = (re.sub('\s+', ' ', message_text).strip()).split()
 						logging.debug(message_words)
-						
+						messengerBot = MessengerBotProfile.objects.get(page_uuid = from_page_uuid)
 						response_message = dict()
 						params = dict()
 						headers = dict()
 						params.update({
-							"access_token": settings.PAGE_ACCESS_TOKEN
+							"access_token": messengerBot.long_lived_access_token
 						})
 						headers.update({
 							"Content-Type": "application/json"
@@ -110,8 +112,9 @@ def facebook_page_webhook(request):
 						
 						response_status = facebook_api.send_message(url=graph_api_url, data=response_message, params=params, headers=headers)
 						try:
-							logging.debug("MESSAGE SEND STATUS")
-							logging.debug(response_status.json())
+							response_status = response_status.json()
+							logging.debug("MESSAGE SEND STATUS", response_status)
+
 						except ValueError as exc1:
 							logging.debug("MESSAGE SEND STATUS ERROR")
 							if isinstance(exc1, dict):
@@ -119,6 +122,7 @@ def facebook_page_webhook(request):
 							else:
 								logging.error(exc1)
 						finally:
+
 							messenger_customer = facebook_api.get_user_info(user_id=user_page_id, access_token=settings.PAGE_ACCESS_TOKEN)
 							try:
 								logging.debug("GET USER INFO STATUS")
@@ -148,7 +152,7 @@ def facebook_user_webhook(request):
 			return HttpResponse(status=403)
 	elif request.method == 'POST':
 		incoming_message = json.loads(request.body.decode('utf-8'))
-		logging.debug("Facebook messenger hook")
+		logging.debug("Facebook messenger user hook")
 		logging.debug(incoming_message)
 		return HttpResponse(status=200)
 
@@ -167,18 +171,18 @@ class FacebookPageBotAPIView(views.APIView):
 		print(fb_user['access_token'])
 		print(messenger_data)
 		
-		is_valid = is_valid_token(fb_user['access_token'])
-		if not is_valid:
-			print('TOKEN INVALID')
-			context.update({
-				'error': {
-					'code': 417,
-					'message': 'Facebook token has expired, please login to facebook or re-authenticate with our facebook app again.'
-				}
-			})
-			response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
-			return response
-		print('TOKEN VALID')
+		# is_valid = is_valid_token(fb_user['access_token'])
+		# if not is_valid:
+		# 	print('TOKEN INVALID')
+		# 	context.update({
+		# 		'error': {
+		# 			'code': 417,
+		# 			'message': 'Facebook token has expired, please login to facebook or re-authenticate with our facebook app again.'
+		# 		}
+		# 	})
+		# 	response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+		# 	return response
+		# print('TOKEN VALID')
 		long_lived_token = exchange_long_lived_token(fb_user['access_token'])
 		if not long_lived_token:
 			print('FAILED OBTAIN LONG LIVED TOKEN')
@@ -207,31 +211,33 @@ class FacebookPageBotAPIView(views.APIView):
 			return response
 		page_token = page_detail['access_token']
 		print('GET PAGE DETAIL TOKEN', page_token)
-		# msg_profile_response = do_messenger_profile(access_token=page_token, action='SET', data=messenger_data)
-		# if 'error' in msg_profile_response:
-		# 	print('FAILED MESSENGER PROFILE')
-		# 	context.update({
-		# 		'error': {
-		# 			'code': msg_profile_response['error']['code'],
-		# 			'message': msg_profile_response['error']['message']
-		# 		}
-		# 	})
-		# 	response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
-		# 	return response
-		# print('DONE MESSENGER PROFILE')
-		# webhook_response = do_webhook_subscription(access_token=page_token, page_id=server_data.get('page_uuid'),
-		#                                            action='POST')
-		# if 'error' in webhook_response:
-		# 	print('FAILED WEBHOOK SUBSCRIPTION')
-		# 	context.update({
-		# 		'error': {
-		# 			'code': webhook_response['error']['code'],
-		# 			'message': webhook_response['error']['message']
-		# 		}
-		# 	})
-		# 	response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
-		# 	return response
-		# print('DONE WEBHOOK SUBSCRIPTION')
+		msg_profile_response = do_messenger_profile(access_token=page_token, action='SET', data=messenger_data)
+		print("MSG PROFILE", msg_profile_response)
+		if 'error' in msg_profile_response:
+			print('FAILED MESSENGER PROFILE')
+			context.update({
+				'error': {
+					'code': msg_profile_response['error']['code'],
+					'message': msg_profile_response['error']['message']
+				}
+			})
+			response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+			return response
+		print('DONE MESSENGER PROFILE')
+		webhook_response = do_webhook_subscription(access_token=page_token, page_id=server_data.get('page_uuid'),
+		                                           action='POST')
+		print("DO WEEBHOOK", webhook_response)
+		if 'error' in webhook_response:
+			print('FAILED WEBHOOK SUBSCRIPTION')
+			context.update({
+				'error': {
+					'code': webhook_response['error']['code'],
+					'message': webhook_response['error']['message']
+				}
+			})
+			response = Response(context, status=status.HTTP_417_EXPECTATION_FAILED)
+			return response
+		print('DONE WEBHOOK SUBSCRIPTION')
 		server_data['long_lived_access_token'] = page_token
 		server_data['access_token'] = page_token
 		print('NEW SERVER DATA', server_data)

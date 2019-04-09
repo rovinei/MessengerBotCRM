@@ -15,9 +15,12 @@ import sys
 
 from django.core.wsgi import get_wsgi_application
 
-sys.path.append('/home/ubuntu/Projects/MessengerBotCRM')
+# sys.path.append('/home/ubuntu/Projects/MessengerBotCRM')
+sys.path.append('/Users/vinei/Personal/Projects/DjangoReactJS/MessengerBotCRM')
+
 # adjust the Python version in the line below as needed
-sys.path.append('/home/ubuntu/.virtualenvs/messengerBot/lib/python3.5/site-packages')
+# sys.path.append('/home/ubuntu/.virtualenvs/messengerBot/lib/python3.5/site-packages')
+sys.path.append('/Users/vinei/.virtualenvs/messengerBot/lib/python3.7/site-packages')
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.settings")
 
