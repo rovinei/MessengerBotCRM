@@ -122,8 +122,6 @@ venv.bak/
 
 db.*
 
-.idea/
-
 .DS_Store
 
 /public
@@ -146,7 +144,6 @@ chrome-user-data
 *.sublime-project
 *.sublime-workspace
 *.iml
-.vscode
 *.swp
 *.swo
 webpack-stats.json
