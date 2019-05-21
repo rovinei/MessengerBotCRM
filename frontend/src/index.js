@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import createHistory from 'history/createBrowserHistory'
 // import { ConnectedRouter } from 'react-router-redux'
 import { Provider } from 'react-redux'
 import configureStore from './store'
 import {
-    HashRouter,
-    Route,
-    Switch
+	HashRouter,
+	Route,
+	Switch
 } from 'react-router-dom';
 import Login from './views/Login/Login.jsx';
 import PrivateRoute from './containers/PrivateRoute.jsx';
@@ -23,17 +22,17 @@ import './assets/css/pe-icon-7-stroke.css';
 import 'uikit/dist/css/uikit.min.css';
 import './assets/sass/dashboard.css';
 
-const history = createHistory()
+const history = require("history").createBrowserHistory()
 const store = configureStore(history)
 
 window.$ = window.jQuery = jQuery;
 ReactDOM.render((
-    <Provider store={store}>
-        <HashRouter>
-            <Switch>
-                <Route exact path="/login/" component={Login} />
-                <PrivateRoute path="/" component={App}/>
-            </Switch>
-        </HashRouter>
-    </Provider>
-),document.getElementById('root'));
+	<Provider store={store}>
+		<HashRouter>
+			<Switch>
+				<Route exact path="/login/" component={Login} />
+				<PrivateRoute path="/" component={App} />
+			</Switch>
+		</HashRouter>
+	</Provider>
+), document.getElementById('root'));
