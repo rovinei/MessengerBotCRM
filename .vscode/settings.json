@@ -1,0 +1,10 @@
+{
+	"files.associations": {
+		"*.html": "html",
+		"*.jsx": "javascriptreact",
+		"*.js": "javascriptreact",
+		"*.sass": "sass",
+		"*.scss": "scss"
+	},
+	"python.pythonPath": "/Users/vinei/.virtualenvs/messengerBot/bin/python",
+}
